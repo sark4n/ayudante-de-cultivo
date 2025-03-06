@@ -56,14 +56,13 @@ export const authOptions = {
           await db.collection("users").insertOne({
             email: user.email,
             name: user.name,
-            profilePhoto: user.image, // Guardar la foto de Google
+            profilePhoto: user.image,
             plants: [],
             achievements: [],
             missionProgress: {},
             createdAt: new Date(),
           });
         } else if (existingUser && account.provider === "google" && !existingUser.profilePhoto) {
-          // Actualizar foto si no existe
           await db.collection("users").updateOne(
             { email: user.email },
             { $set: { profilePhoto: user.image } }
@@ -85,7 +84,8 @@ export const authOptions = {
         const db = client.db("miCultivo");
         const user = await db.collection("users").findOne({ email: session.user.email });
         if (user) {
-          session.user.profilePhoto = user.profilePhoto || session.user.image; // Usar foto de MongoDB o Google
+          console.log("Datos cargados desde MongoDB:", user);
+          session.user.profilePhoto = user.profilePhoto || session.user.image;
           session.user.plants = user.plants || [];
           session.user.achievements = user.achievements || [];
           session.user.missionProgress = user.missionProgress || {};

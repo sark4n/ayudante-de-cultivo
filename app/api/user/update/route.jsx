@@ -13,7 +13,7 @@ export async function POST(req) {
   try {
     await client.connect();
     const db = client.db("miCultivo");
-    await db.collection("users").updateOne(
+    const result = await db.collection("users").updateOne(
       { email: session.user.email },
       { $set: { 
         profilePhoto: userData.profilePhoto, 
@@ -22,8 +22,10 @@ export async function POST(req) {
         missionProgress: userData.missionProgress || {} 
       } }
     );
+    console.log("Resultado de la actualización en MongoDB:", result);
     return new Response(JSON.stringify({ message: 'Datos actualizados' }), { status: 200 });
   } catch (error) {
+    console.error("Error al actualizar datos en MongoDB:", error);
     return new Response(JSON.stringify({ error: 'Error al actualizar datos: ' + error.message }), { status: 500 });
   } finally {
     await client.close();

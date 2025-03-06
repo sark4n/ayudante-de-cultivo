@@ -26,6 +26,7 @@ export default function Home() {
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
+      console.log("Cargando datos de sesión:", session.user);
       setUserData({
         achievements: session.user.achievements || [],
         missionProgress: session.user.missionProgress || {},
@@ -41,14 +42,18 @@ export default function Home() {
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
       const updateData = async () => {
+        console.log("Guardando datos en MongoDB:", { userData, plants });
         try {
           const response = await fetch('/api/user/update', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userData, plants }),
           });
+          const result = await response.json();
           if (!response.ok) {
-            console.error('Error al actualizar datos:', await response.json());
+            console.error('Error al actualizar datos:', result);
+          } else {
+            console.log('Datos actualizados con éxito:', result);
           }
         } catch (error) {
           console.error('Error en useEffect de actualización:', error);
