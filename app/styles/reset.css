@@ -1,0 +1,23 @@
+/* Reset global */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background: #e8f5e9;
+    transition: background 0.3s;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body.dark {
+    background: #1a2e1a;
+    color: #b0e0b0;
+  }
+  
+  main {
+    min-height: calc(100vh - 140px);
+  }

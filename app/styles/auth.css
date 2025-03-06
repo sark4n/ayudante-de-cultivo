@@ -1,0 +1,77 @@
+/* Login Screen */
+#loginScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #e8f5e9;
+    transition: all 0.3s;
+  }
+  
+  body.dark #loginScreen {
+    background: #1a2e1a;
+  }
+  
+  #loginScreen h1 {
+    color: #2e7d32;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  body.dark #loginScreen h1 {
+    color: #b0e0b0;
+  }
+  
+  #authForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  #authForm button {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  
+  #authForm button:hover {
+    background: #388e3c;
+  }
+  
+  #authForm #googleLoginBtn {
+    background: #4285f4;
+  }
+  
+  #authForm #googleLoginBtn:hover {
+    background: #357abd;
+  }
+  
+  body.dark #authForm #googleLoginBtn {
+    background: #357abd;
+  }
+  
+  body.dark #authForm #googleLoginBtn:hover {
+    background: #4285f4;
+  }
+  
+  #authMessage {
+    color: #000000;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
+  body.dark #authMessage {
+    color: #e0e0e0;
+  }

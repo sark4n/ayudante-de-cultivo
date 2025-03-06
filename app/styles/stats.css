@@ -1,0 +1,212 @@
+/* Estadísticas */
+.stats-report {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+  }
+  
+  .stats-report li {
+    background: #f8faf8;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 12px;
+    border: 1px solid #c8e6c9;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+    display: block;
+  }
+  
+  body.dark .stats-report li {
+    background: #2c3e2c;
+    border-color: #4a704a;
+  }
+  
+  .stats-report li:hover {
+    transform: translateY(-3px);
+  }
+  
+  .stats-report .stats-card {
+    background: #ffffff;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+  }
+  
+  body.dark .stats-report .stats-card {
+    background: #344d34;
+    border-color: #5a805a;
+  }
+  
+  .stats-report .stats-card h3.plant-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  body.dark .stats-report .stats-card h3.plant-title {
+    color: #b0e0b0;
+  }
+  
+  .stats-report .stats-card .plant-icon {
+    color: #4caf50;
+    animation: sway 2s infinite ease-in-out;
+    font-size: 24px;
+  }
+  
+  body.dark .stats-report .stats-card .plant-icon {
+    color: #81c784;
+  }
+  
+  .stats-report .stats-card h4 {
+    font-size: 16px;
+    color: #388e3c;
+    margin: 0 0 10px 0;
+    font-weight: 600;
+  }
+  
+  body.dark .stats-report .stats-card h4 {
+    color: #81c784;
+  }
+  
+  .stats-report .stats-card p {
+    margin: 6px 0;
+    color: #555;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  body.dark .stats-report .stats-card p {
+    color: #b0e0b0;
+  }
+  
+  .stats-report .stats-card p strong {
+    color: #2e7d32;
+    font-weight: 600;
+  }
+  
+  body.dark .stats-report .stats-card p strong {
+    color: #81c784;
+  }
+  
+  .stats-report .stats-card p i {
+    color: #4caf50;
+    font-size: 16px;
+  }
+  
+  body.dark .stats-report .stats-card p i {
+    color: #81c784;
+  }
+  
+  .stats-report .phase-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
+  }
+  
+  .stats-report .phase-bar .bar {
+    height: 10px;
+    background: #4caf50;
+    border-radius: 5px;
+    max-width: 200px;
+    min-width: 10px;
+  }
+  
+  .stats-report .phase-bar .bar.semilla {
+    background: #81c784;
+  }
+  
+  .stats-report .phase-bar .bar.vegetativa {
+    background: #4caf50;
+  }
+  
+  .stats-report .phase-bar .bar.floracion {
+    background: #388e3c;
+  }
+  
+  body.dark .stats-report .phase-bar .bar.semilla {
+    background: #66bb6a;
+  }
+  
+  body.dark .stats-report .phase-bar .bar.vegetativa {
+    background: #4caf50;
+  }
+  
+  body.dark .stats-report .phase-bar .bar.floracion {
+    background: #388e3c;
+  }
+  
+  .stats-report .phase-bar span {
+    font-size: 13px;
+    color: #388e3c;
+  }
+  
+  body.dark .stats-report .phase-bar span {
+    color: #81c784;
+  }
+  
+  .stats-report .stats-card.locked {
+    background: #ffebee;
+    border-color: #ffcdd2;
+    text-align: center;
+  }
+  
+  body.dark .stats-report .stats-card.locked {
+    background: #4a2c2c;
+    border-color: #ef5350;
+  }
+  
+  .stats-report .stats-card.locked .locked-premium {
+    color: #d32f2f;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  body.dark .stats-report .stats-card.locked .locked-premium {
+    color: #ef5350;
+  }
+  
+  .stats-report .stats-card .premium-btn {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 10px auto 0;
+    transition: background 0.3s;
+  }
+  
+  .stats-report .stats-card .premium-btn:hover {
+    background: #388e3c;
+  }
+  
+  body.dark .stats-report .stats-card .premium-btn {
+    background: #388e3c;
+  }
+  
+  body.dark .stats-report .stats-card .premium-btn:hover {
+    background: #4caf50;
+  }
+  
+  @keyframes sway {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
+  }
