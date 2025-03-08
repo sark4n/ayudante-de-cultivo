@@ -266,17 +266,24 @@
     position: absolute;
     top: 5px;
     right: 110px; 
-    width: 10px;
-    height: 10px;
+    width: 16px; /* Aumentado para contener el número */
+    height: 16px; /* Aumentado para contener el número */
     background: #d32f2f;
     border-radius: 50%;
-    border: 1px solid white;
+    border: 1px solid rgb(0, 0, 0);
     z-index: 100;
+    display: flex; /* Para centrar el número */
+    align-items: center; /* Centrado vertical */
+    justify-content: center; /* Centrado horizontal */
+    color: white; /* Número en blanco */
+    font-size: 10px; /* Tamaño del texto */
+    font-weight: bold; /* Opcional, para mejor visibilidad */
   }
   
   body.dark .notification-dot {
     background: #ef5350;
     border-color: #2c3e2c;
+    color: white; /* Asegura que siga siendo blanco en modo oscuro */
   }
   
   /* Media query para móvil (max-width: 600px) */
@@ -286,47 +293,3 @@
     }
   }
   
-  /* Indicador de notificación con número para los círculos de logro */
-  .achievement-circle .achievement-notification {
-    display: none; /* Ocultamos las notificaciones numéricas en los círculos de logro */
-    position: absolute;
-    top: 0; /* Centrado verticalmente en cada achievement-circle */
-    left: 0; /* Centrado horizontalmente en cada achievement-circle */
-    transform: translate(-50%, -50%); /* Ajuste para centrar exactamente en cada círculo */
-    width: 16px; /* Tamaño del círculo para contener el número */
-    height: 16px;
-    background: #d32f2f;
-    border-radius: 50%;
-    border: 1px solid white;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px; /* Tamaño del número */
-    color: white;
-    font-weight: bold;
-    text-align: center;
-  }
-  
-  /* Media query para móvil (max-width: 600px) */
-  @media (max-width: 600px) {
-    .achievement-circle .achievement-notification {
-        width: 14px; /* Reducimos ligeramente el tamaño en móvil para mejor legibilidad */
-        height: 14px;
-        font-size: 9px; /* Reducimos el tamaño del número en móvil */
-    }
-  }
-  
-  /* Media query para escritorio (min-width: 601px) */
-  @media (min-width: 601px) {
-    .achievement-circle .achievement-notification {
-        width: 16px; /* Mantenemos el tamaño original para escritorio */
-        height: 16px;
-        font-size: 10px; /* Mantenemos el tamaño del número original para escritorio */
-    }
-  }
-  
-  body.dark .achievement-circle .achievement-notification {
-    background: #ef5350;
-    border-color: #2c3e2c;
-  }

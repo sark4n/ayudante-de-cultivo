@@ -4,12 +4,13 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { showTipOfTheDay } from './lib/navigation';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import LoginScreen from './components/LoginScreen';
 import MainContent from './components/MainContent';
 import ImageModal from './components/ImageModal';
-import NotificationQueue from './components/NotificationQueue';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -22,7 +23,37 @@ export default function Home() {
     name: '',
     email: '',
   });
-  const [notifications, setNotifications] = useState([]);
+  const [achievementsData, setAchievementsData] = useState([]);
+  const [pendingNotifications, setPendingNotifications] = useState([]);
+  const [selectedAchievement, setSelectedAchievement] = useState(null);
+
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      try {
+        const response = await fetch('/api/achievements');
+        const data = await response.json();
+        setAchievementsData(data);
+      } catch (error) {
+        console.error("Error al cargar logros:", error);
+      }
+    };
+    fetchAchievements();
+  }, []);
+
+  const pendingMissionsCount = () => {
+    let count = 0;
+    achievementsData.forEach(ach => {
+      if (!userData.achievements.includes(ach.id)) {
+        ach.missions.forEach(mission => {
+          const progress = userData.missionProgress[mission.id] || 0;
+          if (progress >= mission.target && !userData.missionProgress[`${mission.id}_completed`]) {
+            count++;
+          }
+        });
+      }
+    });
+    return count;
+  };
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
@@ -63,12 +94,48 @@ export default function Home() {
     }
   }, [userData, plants, status, session]);
 
+  useEffect(() => {
+    if (pendingNotifications.length > 0) {
+      pendingNotifications.forEach(({ type, name, icon, id, color }) => {
+        const message = (
+          <div className="flex items-center gap-2">
+            {icon && <i className={icon} style={{ color: type === 'achievement' ? '#FFFFFF' : '#4caf50' }}></i>}
+            <span>{type === 'mission' ? `Misión completada: ${name}` : `Logro desbloqueado: ${name}`}</span>
+          </div>
+        );
+        const toastOptions = {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: document.body.classList.contains('dark') ? 'dark' : 'light',
+          icon: false, // Desactivamos el ícono predeterminado
+        };
+        if (type === 'mission') {
+          toast.success(message, toastOptions);
+        } else if (type === 'achievement') {
+          toast.success(message, {
+            ...toastOptions,
+            style: { backgroundColor: color, color: '#FFFFFF' },
+          });
+        }
+      });
+      setPendingNotifications([]); // Limpiamos después de mostrar
+    }
+  }, [pendingNotifications]);
+
   const handleSectionChange = (sectionId) => {
     setActiveSection(sectionId);
   };
 
   const queueNotification = (type, name, icon = null, id = null, color = null) => {
-    setNotifications(prev => [...prev, { type, name, icon, id, color }]);
+    setPendingNotifications(prev => {
+      // Evitamos duplicados verificando si ya existe una notificación igual
+      if (prev.some(notif => notif.type === type && notif.name === name)) return prev;
+      return [...prev, { type, name, icon, id, color }];
+    });
   };
 
   if (status === 'loading') {
@@ -92,12 +159,19 @@ export default function Home() {
           setPlants={setPlants}
           userData={userData}
           setUserData={setUserData}
-          setActiveSection={setActiveSection}
+          setActiveSection={handleSectionChange}
           queueNotification={queueNotification}
+          setSelectedAchievement={setSelectedAchievement}
+          selectedAchievement={selectedAchievement}
         />
-        <Footer activeSection={activeSection} handleSectionChange={handleSectionChange} userData={userData} />
+        <Footer 
+          activeSection={activeSection} 
+          handleSectionChange={handleSectionChange} 
+          userData={userData} 
+          pendingMissionsCount={pendingMissionsCount()}
+        />
         <ImageModal />
-        <NotificationQueue notifications={notifications} setNotifications={setNotifications} />
+        <ToastContainer position="bottom-right" />
       </div>
 
       <LoginScreen status={status} />

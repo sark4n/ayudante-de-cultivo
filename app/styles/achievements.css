@@ -510,3 +510,51 @@
   body.dark #achievementList .missions li .complete-mission-btn:hover {
     background: #4caf50;
   }
+
+  /* estilos de los logros del perfil */
+  .achievement {
+    padding: 0.75rem;
+    background: linear-gradient(to bottom, #f0fdf4, #dcfce7);
+    border-radius: 9999px;
+    border: 4px solid #9ae6b4;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition-property: transform, box-shadow;
+    transition-duration: 0.3s;
+    width: 120px;
+    height: 120px;
+  }
+  
+  .achievement:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  body.dark .achievement {
+    background: linear-gradient(to bottom, #15803d, #166534);
+    border-color: #15803d;
+  }
+  
+  .achievement.unlocked[data-id="novato"] {
+    background: linear-gradient(to bottom, #CD7F32, #A0522D);
+    border-color: #8B4513;
+    animation: unlockGlow 1s ease-out;
+  }
+  
+  .achievement.unlocked[data-id="avanzado"] {
+    background: linear-gradient(to bottom, #C0C0C0, #A9A9A9);
+    border-color: #808080;
+    animation: unlockGlow 1s ease-out;
+  }
+  
+  .achievement.unlocked[data-id="experto"] {
+    background: linear-gradient(to bottom, #FFD700, #FFA500);
+    border-color: #e6c200;
+    animation: unlockGlow 1s ease-out;
+  }
+  

@@ -4,37 +4,30 @@ import { useEffect, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { toggleDarkMode } from '../lib/navigation';
 
-export default function Profile({ userData, setUserData, plants, setPlants }) {
+export default function Profile({ userData, setUserData, plants, setPlants, setActiveSection, setSelectedAchievement }) {
   const { data: session, status } = useSession();
-  const [achievements] = useState([
-    { 
-      id: "novato", 
-      name: "Cultivador Novato", 
-      color: "#CD7F32", 
-      icon: "fas fa-seedling",
-      missions: [
-        { id: "addFirstPlant", name: "Agrega tu primera planta", completed: false, count: plants.length, target: 1, icon: "fas fa-plus-circle" },
-      ]
-    },
-    { 
-      id: "avanzado", 
-      name: "Cultivador Avanzado", 
-      color: "#C0C0C0", 
-      icon: "fas fa-leaf",
-      missions: [
-        { id: "addFivePlants", name: "Agrega 5 plantas", completed: false, count: plants.length, target: 5, icon: "fas fa-plus-circle" },
-      ]
-    },
-    { 
-      id: "experto", 
-      name: "Cultivador Experto", 
-      color: "#FFD700", 
-      icon: "fas fa-trophy",
-      missions: [
-        { id: "addTenPlants", name: "Agrega 10 plantas", completed: false, count: plants.length, target: 10, icon: "fas fa-plus-circle" },
-      ]
-    },
-  ]);
+  const [achievements, setAchievements] = useState([]);
+
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      try {
+        const response = await fetch('/api/achievements');
+        const data = await response.json();
+        const updatedAchievements = data.map(ach => ({
+          ...ach,
+          missions: ach.missions.map(m => ({
+            ...m,
+            count: plants.length,
+            completed: userData.missionProgress[`${m.id}_completed`] || false
+          }))
+        }));
+        setAchievements(updatedAchievements);
+      } catch (error) {
+        console.error("Error al cargar logros:", error);
+      }
+    };
+    fetchAchievements();
+  }, [plants, userData.missionProgress]);
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -97,9 +90,10 @@ export default function Profile({ userData, setUserData, plants, setPlants }) {
     });
   };
 
-  const hasPendingMissions = achievements.some(ach => 
-    !userData.achievements.includes(ach.id) && ach.missions.some(m => m.count >= m.target && !m.completed)
-  );
+  const handleAchievementClick = (ach) => {
+    setSelectedAchievement(ach);
+    setActiveSection('achievements');
+  };
 
   if (status === 'loading') {
     return <div className="text-center p-20 text-green-700 dark:text-green-300">Cargando...</div>;
@@ -140,19 +134,18 @@ export default function Profile({ userData, setUserData, plants, setPlants }) {
           return (
             <div
               key={ach.id}
-              className={`achievement-circle ${isUnlocked ? 'unlocked' : ''}`}
+              className={`achievement ${isUnlocked ? 'unlocked' : ''}`}
               data-id={ach.id}
-              style={{ cursor: 'pointer' }}
-              onClick={() => window.showSection('achievements')}
+              onClick={() => handleAchievementClick(ach)}
             >
-              <i className={ach.icon} style={{ fontSize: '24px', color: isUnlocked ? '#FFFFFF' : '#4caf50' }}></i>
+              <i className={ach.icon} style={{ fontSize: '32px', color: isUnlocked ? '#FFFFFF' : '#4caf50' }}></i>
+              <div className="achievement-header">
+                <p>{ach.name}</p>
+              </div>
             </div>
           );
         })}
       </div>
-      {hasPendingMissions && (
-        <div className="notification-dot" style={{ position: 'absolute', top: '5px', right: '110px' }}></div>
-      )}
     </section>
   );
 }
