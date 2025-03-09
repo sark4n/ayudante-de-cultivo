@@ -10,7 +10,7 @@ function PlantForm({ onSubmit, onCancel, initialData, title, icon }) {
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      resizeImage(file, 300, 300).then((resizedData) => {
+      resizeImage(file, 1000, 1000).then((resizedData) => {
         setValue('photo', resizedData);
       });
     }
@@ -132,7 +132,7 @@ function UpdateForm({ onSubmit, onCancel, initialData, isEdit }) {
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      resizeImage(file, 300, 300).then((resizedData) => {
+      resizeImage(file, 1000, 1000).then((resizedData) => {
         setValue('photo', resizedData);
       });
     }

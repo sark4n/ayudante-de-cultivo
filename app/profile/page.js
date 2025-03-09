@@ -55,22 +55,23 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
               const canvas = document.createElement('canvas');
               let width = img.width;
               let height = img.height;
+              const maxSize = 1000;
               if (width > height) {
-                if (width > 100) {
-                  height *= 100 / width;
-                  width = 100;
+                if (width > maxSize) {
+                  height *= maxSize / width;
+                  width = maxSize;
                 }
               } else {
-                if (height > 100) {
-                  width *= 100 / height;
-                  height = 100;
+                if (height > maxSize) {
+                  width *= maxSize / height;
+                  height = maxSize;
                 }
               }
               canvas.width = width;
               canvas.height = height;
               const ctx = canvas.getContext('2d');
               ctx.drawImage(img, 0, 0, width, height);
-              const resizedData = canvas.toDataURL('image/jpeg', 0.7);
+              const resizedData = canvas.toDataURL('image/jpeg', 1);
               setUserData(prev => ({ ...prev, profilePhoto: resizedData }));
             };
           };

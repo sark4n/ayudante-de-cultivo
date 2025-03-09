@@ -1,6 +1,6 @@
 // este route.js esta ubicando en api/register/route.jsx
 
-import clientPromise from '../../../lib/mongodb';
+import clientPromise from '../../lib/mongodb';
 import bcrypt from "bcryptjs";
 
 export async function POST(req) {
