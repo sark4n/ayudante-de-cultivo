@@ -1,0 +1,160 @@
+/* Notificación de Oferta del Día (como sección estática) */
+.daily-offer-notification {
+    background: linear-gradient(to right, #FFD700, #FFA500); /* Gradiente dorado Premium */
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Espacio entre ícono, contenido y botón */
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto 15px auto; /* Centrado y con margen inferior */
+    animation: shake 2s infinite ease-in-out; /* Animación de agitar */
+  }
+  
+  .offer-icon {
+    font-size: 24px;
+    color: #fff;
+    animation: pulse 1.5s infinite; /* Animación de pulso para el ícono */
+  }
+  
+  .offer-content {
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 1; /* Permite que el contenido ocupe espacio disponible */
+  }
+  
+  .offer-content h4 {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+  }
+  
+  .offer-content p {
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  .offer-cta {
+    background: #000; /* Negro */
+    color: #ffffff; /* Letras doradas */
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.3s;
+    white-space: nowrap; /* Evita que el texto se divida */
+  }
+  
+  .offer-cta:hover {
+    background: #333; /* Gris oscuro en hover */
+  }
+  
+  /* Modo oscuro */
+  body.dark .daily-offer-notification {
+    background: linear-gradient(to right, #FFD700, #FFA500); /* Mismo dorado */
+  }
+  
+  body.dark .offer-icon {
+    color: #fff;
+  }
+  
+  body.dark .offer-content {
+    color: #fff;
+  }
+  
+  body.dark .offer-cta {
+    background: #000;
+  }
+  
+  body.dark .offer-cta:hover {
+    background: #333;
+  }
+  
+  /* Animaciones */
+  @keyframes slideIn {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes shake {
+    0% {
+      transform: translateX(0);
+    }
+    10% {
+      transform: translateX(-5px);
+    }
+    20% {
+      transform: translateX(5px);
+    }
+    30% {
+      transform: translateX(-5px);
+    }
+    40% {
+      transform: translateX(5px);
+    }
+    50% {
+      transform: translateX(-3px);
+    }
+    60% {
+      transform: translateX(3px);
+    }
+    70% {
+      transform: translateX(-3px);
+    }
+    80% {
+      transform: translateX(3px);
+    }
+    90% {
+      transform: translateX(-1px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .daily-offer-notification {
+      padding: 10px;
+      max-width: 100%;
+      margin: 0 10px 15px 10px; /* Márgenes laterales en móvil */
+      gap: 10px;
+    }
+    .offer-icon {
+      font-size: 20px;
+    }
+    .offer-content h4 {
+      font-size: 14px;
+    }
+    .offer-content p {
+      font-size: 12px;
+    }
+    .offer-cta {
+      padding: 5px 10px;
+      font-size: 10px;
+    }
+  }

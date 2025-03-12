@@ -4,27 +4,25 @@ export default function Header({ activeSection }) {
   const iconMap = {
     home: "home",
     plants: "leaf",
-    guides: "book",
+    missions: "trophy",
     community: "users",
-    achievements: "trophy",
-    premium: "star",
     profile: "user",
     stats: "chart-bar",
+    guides: "book",
   };
 
   const titleMap = {
     home: "Inicio",
     plants: "Mis Plantas",
-    guides: "Guías",
+    missions: "Misiones",
     community: "Comunidad",
-    achievements: "Logros",
-    premium: "Premium",
     profile: "Perfil",
     stats: "Estadísticas",
+    guides: "Guías",
   };
 
   return (
-    <header>
+    <header className="header"> {/* Añadí clase 'header' para consistencia con CSS */}
       <h1>
         <i className={`fas fa-${iconMap[activeSection]}`}></i>
         {titleMap[activeSection]}

@@ -1,0 +1,100 @@
+/* Estilos para el carrusel en Inicio */
+
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 200px; /* Ajusta según tus imágenes */
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .carousel-slide.active {
+    opacity: 1;
+  }
+  
+  .slide-content {
+    background: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente para legibilidad */
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    color: white;
+  }
+  
+  .slide-content h3 {
+    font-size: 18px;
+    margin: 0 0 5px 0;
+  }
+  
+  .slide-content p {
+    font-size: 14px;
+    margin: 0 0 10px 0;
+  }
+  
+  .cta-btn {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+  }
+  
+  .cta-btn:hover {
+    background: #388e3c;
+  }
+  
+  body.dark .cta-btn {
+    background: #81c784;
+  }
+  
+  body.dark .cta-btn:hover {
+    background: #66bb6a;
+  }
+  
+  .carousel-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+  
+  .dot {
+    width: 8px;
+    height: 8px;
+    background: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .dot.active {
+    background: #4caf50;
+  }
+  
+  body.dark .dot {
+    background: #666;
+  }
+  
+  body.dark .dot.active {
+    background: #81c784;
+  }

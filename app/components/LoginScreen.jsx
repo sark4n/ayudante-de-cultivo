@@ -49,7 +49,7 @@ export default function LoginScreen({ status }) {
   return (
     <div id="loginScreen" className={status !== "authenticated" ? "" : "hidden"}>
       <h1>
-        <i className="fas fa-leaf"></i> Mi Cultivo
+        <i className="fas fa-leaf"></i> Bienvenido al Asistente de Cultivo
       </h1>
       <form id="authForm" onSubmit={(e) => e.preventDefault()}>
         <input

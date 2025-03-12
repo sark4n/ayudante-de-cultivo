@@ -22,6 +22,10 @@ export default function Home() {
     profilePhoto: null,
     name: '',
     email: '',
+    level: 0,
+    xp: 0,
+    newAchievements: 0,
+    pendingMissionCompletions: 0,
   });
   const [achievementsData, setAchievementsData] = useState([]);
   const [pendingNotifications, setPendingNotifications] = useState([]);
@@ -40,16 +44,23 @@ export default function Home() {
     fetchAchievements();
   }, []);
 
+  const dailyMissions = [
+    { id: "checkPlant", name: "Chequear Planta", xp: 10, target: 1, icon: "fas fa-eye" },
+    { id: "waterPlant", name: "Regar Planta", xp: 15, target: 1, icon: "fas fa-tint" },
+    { id: "updatePlant", name: "Actualizar Planta", xp: 20, target: 1, icon: "fas fa-sync-alt" },
+  ];
+
   const pendingMissionsCount = () => {
     let count = 0;
-    achievementsData.forEach(ach => {
-      if (!userData.achievements.includes(ach.id)) {
-        ach.missions.forEach(mission => {
-          const progress = userData.missionProgress[mission.id] || 0;
-          if (progress >= mission.target && !userData.missionProgress[`${mission.id}_completed`]) {
-            count++;
-          }
-        });
+    const allMissions = [
+      ...dailyMissions,
+      ...achievementsData.flatMap(ach => ach.missions),
+    ];
+    allMissions.forEach(mission => {
+      const progress = userData.missionProgress[mission.id] || 0;
+      const completed = userData.missionProgress[`${mission.id}_completed`] || false;
+      if (progress >= mission.target && !completed) {
+        count++;
       }
     });
     return count;
@@ -64,6 +75,10 @@ export default function Home() {
         profilePhoto: session.user.profilePhoto || session.user.image || null,
         name: session.user.name || 'Usuario autenticado',
         email: session.user.email,
+        level: session.user.level || 0,
+        xp: session.user.xp || 0,
+        newAchievements: session.user.newAchievements || 0,
+        pendingMissionCompletions: session.user.pendingMissionCompletions || 0,
       });
       setPlants(session.user.plants || []);
       showTipOfTheDay();
@@ -111,7 +126,7 @@ export default function Home() {
           pauseOnHover: true,
           draggable: true,
           theme: document.body.classList.contains('dark') ? 'dark' : 'light',
-          icon: false, // Desactivamos el ícono predeterminado
+          icon: false,
         };
         if (type === 'mission') {
           toast.success(message, toastOptions);
@@ -120,19 +135,25 @@ export default function Home() {
             ...toastOptions,
             style: { backgroundColor: color, color: '#FFFFFF' },
           });
+          setUserData(prev => ({ ...prev, newAchievements: (prev.newAchievements || 0) + 1 }));
         }
       });
-      setPendingNotifications([]); // Limpiamos después de mostrar
+      setPendingNotifications([]);
     }
   }, [pendingNotifications]);
 
   const handleSectionChange = (sectionId) => {
     setActiveSection(sectionId);
+    if (sectionId === 'missions') {
+      setUserData(prev => ({ ...prev, pendingMissionCompletions: 0 }));
+    }
+    if (sectionId === 'profile') {
+      setUserData(prev => ({ ...prev, newAchievements: 0 }));
+    }
   };
 
   const queueNotification = (type, name, icon = null, id = null, color = null) => {
     setPendingNotifications(prev => {
-      // Evitamos duplicados verificando si ya existe una notificación igual
       if (prev.some(notif => notif.type === type && notif.name === name)) return prev;
       return [...prev, { type, name, icon, id, color }];
     });

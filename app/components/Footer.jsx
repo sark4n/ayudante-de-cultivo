@@ -1,14 +1,17 @@
 "use client";
 
 export default function Footer({ activeSection, handleSectionChange, userData, pendingMissionsCount }) {
+  const totalMissionsPending = pendingMissionsCount + (userData.pendingMissionCompletions || 0);
+  console.log("Footer - pendingMissionsCount:", pendingMissionsCount, "pendingMissionCompletions:", userData.pendingMissionCompletions, "total:", totalMissionsPending);
+
   return (
     <footer className="footer">
       <nav>
         {[
           { id: "home", icon: "fa-home", label: "Inicio" },
-          { id: "plants", icon: "fa-leaf", label: "Plantas" },
-          { id: "guides", icon: "fa-book", label: "Guías" },
+          { id: "missions", icon: "fa-trophy", label: "Misiones" },
           { id: "community", icon: "fa-users", label: "Comunidad" },
+          { id: "plants", icon: "fa-leaf", label: "Plantas" },
           { id: "profile", icon: "fa-user", label: "Perfil" },
         ].map(({ id, icon, label }) => (
           <button
@@ -23,8 +26,15 @@ export default function Footer({ activeSection, handleSectionChange, userData, p
               <i className={`fas ${icon}`}></i>
             )}
             <span>{label}</span>
-            {id === "profile" && pendingMissionsCount > 0 && (
-              <span className="notification-dot" style={{ color: "white" }} >{pendingMissionsCount}</span>
+            {id === "missions" && totalMissionsPending > 0 && (
+              <span className="notification-dot" style={{ color: "white" }}>
+                {totalMissionsPending}
+              </span>
+            )}
+            {id === "profile" && (userData.newAchievements || 0) > 0 && (
+              <span className="notification-dot" style={{ color: "white" }}>
+                {userData.newAchievements}
+              </span>
             )}
           </button>
         ))}

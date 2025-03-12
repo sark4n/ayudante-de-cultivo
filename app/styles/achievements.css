@@ -558,3 +558,291 @@
     animation: unlockGlow 1s ease-out;
   }
   
+
+  /* Pestañas de misiones */
+#missions .tabs {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+#missions .tab-btn {
+  padding: 12px 50px;
+  background: #e0e0e0;
+  color: #333;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s, color 0.3s;
+}
+
+#missions .tab-btn.active {
+  background: #4caf50;
+  color: #fff;
+}
+
+#missions .tab-btn:hover {
+  background: #66bb6a;
+  color: #fff;
+}
+
+body.dark #missions .tab-btn {
+  background: #495057;
+  color: #e0e0e0;
+}
+
+body.dark #missions .tab-btn.active {
+  background: #81c784;
+  color: #fff;
+}
+
+body.dark #missions .tab-btn:hover {
+  background: #66bb6a;
+}
+
+/* Botones de prueba */
+#missions .test-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+#missions .reset-btn {
+  padding: 12px 24px;
+  background: #f44336;
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+#missions .reset-btn:hover {
+  background: #d32f2f;
+}
+
+#missions .simulate-btn {
+  padding: 12px 24px;
+  background: #2196f3;
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+#missions .simulate-btn:hover {
+  background: #1976d2;
+}
+
+body.dark #missions .reset-btn {
+  background: #ef5350;
+}
+
+body.dark #missions .reset-btn:hover {
+  background: #d32f2f;
+}
+
+body.dark #missions .simulate-btn {
+  background: #42a5f5;
+}
+
+body.dark #missions .simulate-btn:hover {
+  background: #1976d2;
+}
+
+/* Tarjetas de misiones */
+#missions .missions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#missions .missions li {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: linear-gradient(to right, #ffffff, #f9f9f9);
+  border: 2px solid #d4edda;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2e7d32;
+  max-width: 100%;
+  width: 600px;
+  box-sizing: border-box;
+  position: relative; /* Para posicionar el dot */
+}
+
+#missions .missions li i {
+  font-size: 24px;
+  color: #4caf50;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+#missions .missions li .mission-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Distribuir espacio uniformemente */
+  gap: 10px;
+  min-width: 0;
+}
+
+#missions .missions li .mission-content span {
+  font-size: 14px;
+  white-space: normal;
+  word-wrap: break-word;
+  max-height: 2.8em;
+  line-height: 1.4em;
+  overflow: hidden;
+  flex-grow: 1; /* Permitir que el texto ocupe espacio disponible */
+}
+
+#missions .missions li .progress-bar {
+  width: 100px;
+  height: 16px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+#missions .missions li .progress {
+  height: 100%;
+  background: #4caf50;
+  transition: width 0.3s;
+}
+
+#missions .missions li .progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+#missions .missions li:hover {
+  background: #f0f0f0;
+}
+
+#missions .missions li.completed {
+  border: 2px solid #4caf50;
+  background: linear-gradient(to right, #e8f5e9, #d4edda);
+  color: #388e3c;
+  animation: missionComplete 0.5s ease-out;
+}
+
+#missions .missions li.completed::after {
+  content: '\f058';
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: #4caf50;
+  font-size: 24px;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+#missions .missions li .complete-mission-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+#missions .missions li .complete-mission-btn:hover {
+  background: #388e3c;
+}
+
+#missions .missions li .mission-notification-dot {
+  width: 8px;
+  height: 8px;
+  background: #f44336;
+  border-radius: 50%;
+  position: absolute;
+  top: 5px;
+  right: 5px; /* Mover a la esquina superior derecha */
+}
+
+body.dark #missions .missions li {
+  background: linear-gradient(to right, #3c573c, #344d34);
+  border: 2px solid #5a805a;
+  color: #b0e0b0;
+}
+
+body.dark #missions .missions li i {
+  color: #81c784;
+}
+
+body.dark #missions .missions li.completed {
+  border: 2px solid #81c784;
+  background: linear-gradient(to right, #4a704a, #3c573c);
+  color: #81c784;
+}
+
+body.dark #missions .missions li.completed::after {
+  color: #81c784;
+}
+
+body.dark #missions .missions li .progress-bar {
+  background: #495057;
+}
+
+body.dark #missions .missions li .progress {
+  background: #81c784;
+}
+
+body.dark #missions .missions li .complete-mission-btn {
+  background: #388e3c;
+}
+
+body.dark #missions .missions li .complete-mission-btn:hover {
+  background: #4caf50;
+}
+
+body.dark #missions .missions li .mission-notification-dot {
+  background: #ef5350;
+}
+
+/* Media Queries para móviles */
+@media (max-width: 600px) {
+  #missions .missions li {
+    padding: 8px;
+    width: 100%; /* Ajustar al contenedor en móviles */
+  }
+  #missions .missions li i {
+    font-size: 20px;
+  }
+  #missions .missions li .mission-content {
+    gap: 8px;
+  }
+  #missions .missions li .progress-bar {
+    width: 80px;
+  }
+  #missions .missions li .complete-mission-btn {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+  #missions .missions li.completed::after {
+    font-size: 20px;
+  }
+}

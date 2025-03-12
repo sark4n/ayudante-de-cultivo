@@ -1,0 +1,91 @@
+.community-widget {
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .community-widget h3 {
+    color: #2e7d32;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  
+  body.dark .community-widget h3 {
+    color: #81c784;
+  }
+  
+  .community-preview {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #d4edda;
+    border-radius: 8px;
+    padding: 15px;
+    width: 100%; /* Ocupa todo el ancho del contenedor en escritorio */
+    height: 150px; /* Altura fija consistente */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    cursor: pointer; /* Indica que es clicable */
+  }
+  
+  .community-preview:hover {
+    transform: scale(1.02);
+  }
+  
+  .community-info {
+    background: rgba(0, 0, 0, 0.6); /* Fondo negro transparente */
+    padding: 10px;
+    border-radius: 5px;
+    color: #fff;
+    text-align: left;
+  }
+  
+  .community-info h4 {
+    font-size: 18px; /* Título grande */
+    font-weight: bold;
+    margin: 0 0 5px 0;
+  }
+  
+  .community-info p {
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  /* Modo oscuro */
+  body.dark .community-preview {
+    border-color: #5a805a;
+  }
+  
+  body.dark .community-info {
+    background: rgba(0, 0, 0, 0.7); /* Ligeramente más oscuro en modo oscuro */
+  }
+  
+  body.dark .community-info h4,
+  body.dark .community-info p {
+    color: #fff;
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .community-preview {
+      padding: 10px; /* Padding lateral consistente con otras tarjetas */
+      width: 100%; /* Ocupa todo el ancho */
+      margin: 0; /* Sin márgenes laterales adicionales */
+      height: 120px; /* Altura mayor en móvil */
+      background-size: cover; /* Fondo completo */
+    }
+    .community-info {
+      width: 100%; /* Ocupa todo el ancho */
+      padding: 8px;
+    }
+    .community-info h4 {
+      font-size: 16px; /* Ajustado para móvil */
+    }
+    .community-info p {
+      font-size: 12px;
+    }
+  }

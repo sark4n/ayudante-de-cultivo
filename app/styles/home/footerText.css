@@ -1,0 +1,15 @@
+.footer-text {
+    font-size: 14px;
+    color: #388e3c;
+    font-style: italic;
+    text-align: center;
+    padding: 10px;
+    background: rgba(200, 230, 201, 0.3); /* Fondo verde suave */
+    border-radius: 5px;
+    margin: 0;
+  }
+  
+  body.dark .footer-text {
+    color: #c8e6c9;
+    background: rgba(74, 112, 74, 0.3);
+  }

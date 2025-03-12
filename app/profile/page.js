@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { toggleDarkMode } from '../lib/navigation';
+import '../styles/achievements.css'; // Para reutilizar estilos de logros
 
-export default function Profile({ userData, setUserData, plants, setPlants, setActiveSection, setSelectedAchievement }) {
+export default function Profile({ userData, setUserData, plants, setPlants, setActiveSection }) {
   const { data: session, status } = useSession();
   const [achievements, setAchievements] = useState([]);
 
@@ -13,21 +14,13 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
       try {
         const response = await fetch('/api/achievements');
         const data = await response.json();
-        const updatedAchievements = data.map(ach => ({
-          ...ach,
-          missions: ach.missions.map(m => ({
-            ...m,
-            count: plants.length,
-            completed: userData.missionProgress[`${m.id}_completed`] || false
-          }))
-        }));
-        setAchievements(updatedAchievements);
+        setAchievements(data);
       } catch (error) {
         console.error("Error al cargar logros:", error);
       }
     };
     fetchAchievements();
-  }, [plants, userData.missionProgress]);
+  }, []);
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -35,6 +28,8 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
         ...prev,
         name: session?.user?.name || 'Usuario autenticado',
         email: session?.user?.email,
+        level: session?.user?.level || 0,
+        xp: session?.user?.xp || 0,
       }));
     }
   }, [session, status, setUserData]);
@@ -55,7 +50,7 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
               const canvas = document.createElement('canvas');
               let width = img.width;
               let height = img.height;
-              const maxSize = 1000;
+              const maxSize = 200;
               if (width > height) {
                 if (width > maxSize) {
                   height *= maxSize / width;
@@ -71,7 +66,7 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
               canvas.height = height;
               const ctx = canvas.getContext('2d');
               ctx.drawImage(img, 0, 0, width, height);
-              const resizedData = canvas.toDataURL('image/jpeg', 1);
+              const resizedData = canvas.toDataURL('image/jpeg', 0.7);
               setUserData(prev => ({ ...prev, profilePhoto: resizedData }));
             };
           };
@@ -86,14 +81,16 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
 
   const logout = () => {
     signOut({ redirect: true, callbackUrl: '/' }).then(() => {
-      setUserData({ achievements: [], missionProgress: {}, profilePhoto: null, name: '', email: '' });
+      setUserData({ achievements: [], missionProgress: {}, profilePhoto: null, name: '', email: '', level: 0, xp: 0, newAchievements: 0 });
       setPlants([]);
     });
   };
 
-  const handleAchievementClick = (ach) => {
-    setSelectedAchievement(ach);
-    setActiveSection('achievements');
+  const xpToNextLevel = () => {
+    const levels = [0, 100, 250, 450, 700, 1000, 1350, 1750, 2200, 2700, 3250];
+    const currentXp = Number.isFinite(userData.xp) ? userData.xp : 0;
+    const nextLevelIndex = (userData.level || 0) + 1;
+    return levels[nextLevelIndex] || levels[10];
   };
 
   if (status === 'loading') {
@@ -126,20 +123,36 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
         )}
       </div>
       <h2 className="text-green-700 dark:text-green-300">{userData.name || 'Usuario no autenticado'}</h2>
+      <div className="level-section mt-20">
+        <h3 className="text-green-700 dark:text-green-300 flex items-center justify-center gap-5">
+          <i className="fas fa-star"></i> Nivel {userData.level}
+        </h3>
+        <div className="progress-bar" style={{ width: '250px', margin: '15px auto', background: '#e0e0e0', borderRadius: '10px', overflow: 'hidden', position: 'relative', height: '25px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <div
+            className="progress"
+            style={{
+              width: `${(userData.xp / xpToNextLevel()) * 100}%`,
+              height: '100%',
+              background: 'linear-gradient(to right, #4caf50, #66bb6a)',
+              borderRadius: '10px',
+              transition: 'width 0.5s ease-in-out',
+            }}
+          ></div>
+          <span className="progress-text" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#fff', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
+            {userData.xp} / {xpToNextLevel()} XP
+          </span>
+        </div>
+      </div>
       <h3 className="flex items-center justify-center gap-5 text-green-700 mt-20 mb-15 dark:text-green-300">
         <i className="fas fa-trophy"></i> Mis Trofeos
       </h3>
-      <div id="profileAchievements" className="flex justify-center gap-20">
+      <div id="profileAchievements" className="flex justify-center gap-20 flex-wrap">
         {achievements.map((ach) => {
           const isUnlocked = userData.achievements.includes(ach.id);
+          if (!isUnlocked) return null;
           return (
-            <div
-              key={ach.id}
-              className={`achievement ${isUnlocked ? 'unlocked' : ''}`}
-              data-id={ach.id}
-              onClick={() => handleAchievementClick(ach)}
-            >
-              <i className={ach.icon} style={{ fontSize: '32px', color: isUnlocked ? '#FFFFFF' : '#4caf50' }}></i>
+            <div key={ach.id} className="achievement unlocked" data-id={ach.id}>
+              <i className={ach.icon} style={{ fontSize: '32px', color: '#FFFFFF' }}></i>
               <div className="achievement-header">
                 <p>{ach.name}</p>
               </div>
@@ -147,6 +160,12 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
           );
         })}
       </div>
+      <button
+        className="mt-20 bg-green-500 text-white p-10 rounded-md hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+        onClick={() => setActiveSection('guides')}
+      >
+        <i className="fas fa-book"></i> Ver Guías
+      </button>
     </section>
   );
 }

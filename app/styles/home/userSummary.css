@@ -1,0 +1,81 @@
+/* Estilos para el Resumen Personalizado */
+.user-summary {
+    background: linear-gradient(to right, #e8f5e9, #c8e6c9);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  body.dark .user-summary {
+    background: linear-gradient(to right, #5a8e5a, #4a704a);
+  }
+  
+  .user-summary h3 {
+    color: #2e7d32;
+    font-size: 18px;
+    margin: 0 0 10px 0;
+  }
+  
+  body.dark .user-summary h3 {
+    color: #b0e0b0;
+  }
+  
+  .summary-details {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+  }
+  
+  .summary-details p {
+    color: #388e3c;
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  .summary-details i {
+    margin-right: 5px;
+  }
+  
+  body.dark .summary-details p {
+    color: #c8e6c9;
+  }
+  
+  .xp-bar {
+    width: 100%;
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .xp-progress {
+    height: 100%;
+    background: #4caf50;
+    transition: width 0.5s ease-in-out;
+  }
+  
+  body.dark .xp-progress {
+    background: #81c784;
+  }
+  
+  .xp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    color: #fff;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }

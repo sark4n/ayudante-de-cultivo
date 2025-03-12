@@ -5,12 +5,12 @@ import { useForm } from 'react-hook-form';
 import { resizeImage } from '../lib/navigation';
 
 function PlantForm({ onSubmit, onCancel, initialData, title, icon }) {
-  const { register, handleSubmit, setValue, watch } = useForm({ defaultValues: initialData });
+  const { register, handleSubmit, setValue } = useForm({ defaultValues: initialData });
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      resizeImage(file, 1000, 1000).then((resizedData) => {
+      resizeImage(file, 300, 300).then((resizedData) => {
         setValue('photo', resizedData);
       });
     }
@@ -27,27 +27,15 @@ function PlantForm({ onSubmit, onCancel, initialData, title, icon }) {
         </h2>
         <div className="form-content">
           <div className="form-field">
-            <label>
-              <i className="fas fa-pen"></i> Nombre
-            </label>
-            <input
-              {...register('name', { required: true })}
-              placeholder="Nombre de la planta"
-            />
+            <label><i className="fas fa-pen"></i> Nombre</label>
+            <input {...register('name', { required: true })} placeholder="Nombre de la planta" />
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-calendar-alt"></i> Fecha de Inicio
-            </label>
-            <input
-              type="date"
-              {...register('startDate', { required: true })}
-            />
+            <label><i className="fas fa-calendar-alt"></i> Fecha de Inicio</label>
+            <input type="date" {...register('startDate', { required: true })} />
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-seedling"></i> Tipo de Planta
-            </label>
+            <label><i className="fas fa-seedling"></i> Tipo de Planta</label>
             <select {...register('type', { required: true })}>
               <option value="">Selecciona un tipo</option>
               <option value="indica">Indica</option>
@@ -57,9 +45,7 @@ function PlantForm({ onSubmit, onCancel, initialData, title, icon }) {
             </select>
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-leaf"></i> Fase Actual
-            </label>
+            <label><i className="fas fa-leaf"></i> Fase Actual</label>
             <select {...register('phase', { required: true })}>
               <option value="">Selecciona una fase</option>
               <option value="semilla">Semilla</option>
@@ -68,58 +54,25 @@ function PlantForm({ onSubmit, onCancel, initialData, title, icon }) {
             </select>
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-thermometer-half"></i> Temperatura (°C)
-            </label>
-            <input
-              type="number"
-              {...register('temperature')}
-              placeholder="Ej: 25.5"
-              step="0.1"
-              min="0"
-              max="50"
-            />
+            <label><i className="fas fa-thermometer-half"></i> Temperatura (°C)</label>
+            <input type="number" {...register('temperature')} placeholder="Ej: 25.5" step="0.1" min="0" max="50" />
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-tint"></i> Humedad (%)
-            </label>
-            <input
-              type="number"
-              {...register('humidity')}
-              placeholder="Ej: 60"
-              step="1"
-              min="0"
-              max="100"
-            />
+            <label><i className="fas fa-tint"></i> Humedad (%)</label>
+            <input type="number" {...register('humidity')} placeholder="Ej: 60" step="1" min="0" max="100" />
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-camera"></i> Foto
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handlePhotoChange}
-            />
+            <label><i className="fas fa-camera"></i> Foto</label>
+            <input type="file" accept="image/*" onChange={handlePhotoChange} />
           </div>
           <div className="form-field-start">
-            <label>
-              <i className="fas fa-sticky-note"></i> Notas
-            </label>
-            <textarea
-              {...register('notes')}
-              placeholder="Añade notas sobre tu planta"
-            ></textarea>
+            <label><i className="fas fa-sticky-note"></i> Notas</label>
+            <textarea {...register('notes')} placeholder="Añade notas sobre tu planta"></textarea>
           </div>
         </div>
         <div className="form-buttons">
-          <button type="button" onClick={onCancel} className="plant-btn">
-            <i className="fas fa-times"></i> Cancelar
-          </button>
-          <button type="submit" className="plant-btn">
-            <i className="fas fa-save"></i> Guardar
-          </button>
+          <button type="button" onClick={onCancel} className="plant-btn"><i className="fas fa-times"></i> Cancelar</button>
+          <button type="submit" className="plant-btn"><i className="fas fa-save"></i> Guardar</button>
         </div>
       </div>
     </form>
@@ -127,12 +80,12 @@ function PlantForm({ onSubmit, onCancel, initialData, title, icon }) {
 }
 
 function UpdateForm({ onSubmit, onCancel, initialData, isEdit }) {
-  const { register, handleSubmit, setValue, watch } = useForm({ defaultValues: initialData });
+  const { register, handleSubmit, setValue } = useForm({ defaultValues: initialData });
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      resizeImage(file, 1000, 1000).then((resizedData) => {
+      resizeImage(file, 300, 300).then((resizedData) => {
         setValue('photo', resizedData);
       });
     }
@@ -149,18 +102,11 @@ function UpdateForm({ onSubmit, onCancel, initialData, isEdit }) {
         </h2>
         <div className="form-content">
           <div className="form-field">
-            <label>
-              <i className="fas fa-calendar-alt"></i> Fecha:
-            </label>
-            <input
-              type="date"
-              {...register('date', { required: true })}
-            />
+            <label><i className="fas fa-calendar-alt"></i> Fecha:</label>
+            <input type="date" {...register('date', { required: true })} />
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-leaf"></i> Fase:
-            </label>
+            <label><i className="fas fa-leaf"></i> Fase:</label>
             <select {...register('phase', { required: true })}>
               <option value="">Fase actual</option>
               <option value="semilla">Semilla</option>
@@ -169,58 +115,25 @@ function UpdateForm({ onSubmit, onCancel, initialData, isEdit }) {
             </select>
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-thermometer-half"></i> Temperatura (°C):
-            </label>
-            <input
-              type="number"
-              {...register('temperature')}
-              placeholder="Temperatura (°C)"
-              step="0.1"
-              min="0"
-              max="50"
-            />
+            <label><i className="fas fa-thermometer-half"></i> Temperatura (°C):</label>
+            <input type="number" {...register('temperature')} placeholder="Temperatura (°C)" step="0.1" min="0" max="50" />
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-tint"></i> Humedad (%):
-            </label>
-            <input
-              type="number"
-              {...register('humidity')}
-              placeholder="Humedad (%)"
-              step="1"
-              min="0"
-              max="100"
-            />
+            <label><i className="fas fa-tint"></i> Humedad (%):</label>
+            <input type="number" {...register('humidity')} placeholder="Humedad (%)" step="1" min="0" max="100" />
           </div>
           <div className="form-field-start">
-            <label>
-              <i className="fas fa-sticky-note"></i> Notas:
-            </label>
-            <textarea
-              {...register('notes')}
-              placeholder="Notas"
-            ></textarea>
+            <label><i className="fas fa-sticky-note"></i> Notas:</label>
+            <textarea {...register('notes')} placeholder="Notas"></textarea>
           </div>
           <div className="form-field">
-            <label>
-              <i className="fas fa-camera"></i> Foto:
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handlePhotoChange}
-            />
+            <label><i className="fas fa-camera"></i> Foto:</label>
+            <input type="file" accept="image/*" onChange={handlePhotoChange} />
           </div>
         </div>
         <div className="form-buttons">
-          <button type="submit" className="plant-btn">
-            <i className={isEdit ? 'fas fa-save' : 'fas fa-plus'}></i> {isEdit ? 'Editar' : 'Agregar'}
-          </button>
-          <button type="button" onClick={onCancel} className="plant-btn">
-            <i className="fas fa-times"></i> Cancelar
-          </button>
+          <button type="submit" className="plant-btn"><i className={isEdit ? 'fas fa-save' : 'fas fa-plus'}></i> {isEdit ? 'Editar' : 'Agregar'}</button>
+          <button type="button" onClick={onCancel} className="plant-btn"><i className="fas fa-times"></i> Cancelar</button>
         </div>
       </div>
     </form>
@@ -341,8 +254,13 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
 
     setUserData(prev => {
       const missionProgress = { ...prev.missionProgress };
-
-      if (action === 'addPlant') missionProgress.addFirstPlant = Math.min((missionProgress.addFirstPlant || 0) + 1, 1);
+      if (action === 'addPlant') {
+        missionProgress.addFirstPlant = Math.min((missionProgress.addFirstPlant || 0) + 1, 1);
+        if (missionProgress.addFirstPlant === 1 && !missionProgress.addFirstPlant_notified) {
+          queueNotification('mission', 'Agrega tu primera planta', 'fas fa-plus-circle');
+          missionProgress.addFirstPlant_notified = true;
+        }
+      }
       if (action === 'addUpdate') missionProgress.addFirstUpdate = Math.min((missionProgress.addFirstUpdate || 0) + 1, 1);
       if (action === 'editPlant') missionProgress.changePhase = Math.min((missionProgress.changePhase || 0) + 1, 1);
       if (action === 'deletePlant') missionProgress.deletePlant = Math.min((missionProgress.deletePlant || 0) + 1, 1);
@@ -358,7 +276,6 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
       if (action === 'addUpdate') missionProgress.updateTenPlants = Math.min(uniqueUpdatedPlants.size, 10);
       if (action === 'editPlant') missionProgress.tenPhases = Math.min((missionProgress.tenPhases || 0) + 1, 10);
       if (action === 'deletePlant' || action === 'deleteUpdate') missionProgress.deleteTen = Math.min(missionProgress.deleteCount, 10);
-
       return { ...prev, missionProgress };
     });
   };
@@ -421,7 +338,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
                   <div className="btn-group">
                     <button className="edit plant-btn" onClick={() => { setEditPlantIndex(index); setIsEditFormVisible(true); }}><i className="fas fa-edit"></i></button>
                     <button className="add-update plant-btn" onClick={() => addUpdate(index)}><i className="fas fa-plus"></i></button>
-                    <button className={`stats ${userData.achievements.includes("experto") ? 'expert plant-btn' : 'locked plant-btn'}`} onClick={() => setActiveSection('stats')}><i className="fas fa-chart-bar"></i></button>
+                    <button className={`stats ${userData.level >= 10 ? 'expert plant-btn' : 'locked plant-btn'}`} onClick={() => setActiveSection('stats')}><i className="fas fa-chart-bar"></i></button>
                     <button className="delete plant-btn" onClick={() => deletePlant(index)}><i className="fas fa-trash"></i></button>
                   </div>
                   {plant.photo && <img src={plant.photo} alt={plant.name} onClick={() => window.showImage(plant.photo)} />}
