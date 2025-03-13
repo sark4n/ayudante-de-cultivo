@@ -57,7 +57,6 @@ export default function Missions({ userData, setUserData, plants, queueNotificat
           xp: newXp,
           level: newLevel,
           achievements: newAchievements,
-          pendingMissionCompletions: (prev.pendingMissionCompletions || 0) + 1, // Solo para misiones
         };
       });
       queueNotification('mission', missionName, 'fas fa-check');

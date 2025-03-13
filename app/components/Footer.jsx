@@ -1,8 +1,6 @@
-"use client";
-
 export default function Footer({ activeSection, handleSectionChange, userData, pendingMissionsCount }) {
-  const totalMissionsPending = pendingMissionsCount + (userData.pendingMissionCompletions || 0);
-  console.log("Footer - pendingMissionsCount:", pendingMissionsCount, "pendingMissionCompletions:", userData.pendingMissionCompletions, "total:", totalMissionsPending);
+  const totalMissionsPending = pendingMissionsCount; // Usamos el valor directamente, no lo invocamos
+  console.log("Footer - totalMissionsPending:", totalMissionsPending);
 
   return (
     <footer className="footer">

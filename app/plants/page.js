@@ -1,146 +1,12 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { resizeImage } from '../lib/navigation';
+import PlantForm from '../components/plants/PlantForm'
+import UpdateForm from '../components/plants/UpdateForm';
+import PlantList from '../components/plants/PlantList';
+import PlantDetail from '../components/plants/PlantDetail';
 
-function PlantForm({ onSubmit, onCancel, initialData, title, icon }) {
-  const { register, handleSubmit, setValue } = useForm({ defaultValues: initialData });
-
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      resizeImage(file, 300, 300).then((resizedData) => {
-        setValue('photo', resizedData);
-      });
-    }
-  };
-
-  return (
-    <form
-      className="form-overlay"
-      onSubmit={handleSubmit((data) => onSubmit({ preventDefault: () => {} }, data))}
-    >
-      <div className="plant-form">
-        <h2>
-          <i className={icon}></i> {title}
-        </h2>
-        <div className="form-content">
-          <div className="form-field">
-            <label><i className="fas fa-pen"></i> Nombre</label>
-            <input {...register('name', { required: true })} placeholder="Nombre de la planta" />
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-calendar-alt"></i> Fecha de Inicio</label>
-            <input type="date" {...register('startDate', { required: true })} />
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-seedling"></i> Tipo de Planta</label>
-            <select {...register('type', { required: true })}>
-              <option value="">Selecciona un tipo</option>
-              <option value="indica">Indica</option>
-              <option value="sativa">Sativa</option>
-              <option value="hybrid">Híbrida</option>
-              <option value="otra">Otra</option>
-            </select>
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-leaf"></i> Fase Actual</label>
-            <select {...register('phase', { required: true })}>
-              <option value="">Selecciona una fase</option>
-              <option value="semilla">Semilla</option>
-              <option value="vegetativa">Vegetativa</option>
-              <option value="floracion">Floración</option>
-            </select>
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-thermometer-half"></i> Temperatura (°C)</label>
-            <input type="number" {...register('temperature')} placeholder="Ej: 25.5" step="0.1" min="0" max="50" />
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-tint"></i> Humedad (%)</label>
-            <input type="number" {...register('humidity')} placeholder="Ej: 60" step="1" min="0" max="100" />
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-camera"></i> Foto</label>
-            <input type="file" accept="image/*" onChange={handlePhotoChange} />
-          </div>
-          <div className="form-field-start">
-            <label><i className="fas fa-sticky-note"></i> Notas</label>
-            <textarea {...register('notes')} placeholder="Añade notas sobre tu planta"></textarea>
-          </div>
-        </div>
-        <div className="form-buttons">
-          <button type="button" onClick={onCancel} className="plant-btn"><i className="fas fa-times"></i> Cancelar</button>
-          <button type="submit" className="plant-btn"><i className="fas fa-save"></i> Guardar</button>
-        </div>
-      </div>
-    </form>
-  );
-}
-
-function UpdateForm({ onSubmit, onCancel, initialData, isEdit }) {
-  const { register, handleSubmit, setValue } = useForm({ defaultValues: initialData });
-
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      resizeImage(file, 300, 300).then((resizedData) => {
-        setValue('photo', resizedData);
-      });
-    }
-  };
-
-  return (
-    <form
-      className="form-overlay"
-      onSubmit={handleSubmit((data) => onSubmit({ preventDefault: () => {} }, data))}
-    >
-      <div className="plant-form">
-        <h2>
-          <i className={isEdit ? 'fas fa-edit' : 'fas fa-plus'}></i> {isEdit ? 'Editar Actualización' : 'Agregar Actualización'}
-        </h2>
-        <div className="form-content">
-          <div className="form-field">
-            <label><i className="fas fa-calendar-alt"></i> Fecha:</label>
-            <input type="date" {...register('date', { required: true })} />
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-leaf"></i> Fase:</label>
-            <select {...register('phase', { required: true })}>
-              <option value="">Fase actual</option>
-              <option value="semilla">Semilla</option>
-              <option value="vegetativa">Vegetativa</option>
-              <option value="floracion">Floración</option>
-            </select>
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-thermometer-half"></i> Temperatura (°C):</label>
-            <input type="number" {...register('temperature')} placeholder="Temperatura (°C)" step="0.1" min="0" max="50" />
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-tint"></i> Humedad (%):</label>
-            <input type="number" {...register('humidity')} placeholder="Humedad (%)" step="1" min="0" max="100" />
-          </div>
-          <div className="form-field-start">
-            <label><i className="fas fa-sticky-note"></i> Notas:</label>
-            <textarea {...register('notes')} placeholder="Notas"></textarea>
-          </div>
-          <div className="form-field">
-            <label><i className="fas fa-camera"></i> Foto:</label>
-            <input type="file" accept="image/*" onChange={handlePhotoChange} />
-          </div>
-        </div>
-        <div className="form-buttons">
-          <button type="submit" className="plant-btn"><i className={isEdit ? 'fas fa-save' : 'fas fa-plus'}></i> {isEdit ? 'Editar' : 'Agregar'}</button>
-          <button type="button" onClick={onCancel} className="plant-btn"><i className="fas fa-times"></i> Cancelar</button>
-        </div>
-      </div>
-    </form>
-  );
-}
-
-export default function Plants({ plants, setPlants, userData, setUserData, setActiveSection, queueNotification }) {
+export default function Plants({ plants, setPlants, userData, setUserData, setActiveSection, queueNotification, selectedPlant, setSelectedPlant }) {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [isUpdateFormVisible, setIsUpdateFormVisible] = useState(false);
@@ -153,8 +19,6 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     startDate: '',
     type: '',
     phase: '',
-    temperature: '',
-    humidity: '',
     notes: '',
     photo: null,
     updates: [],
@@ -195,6 +59,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
   const deletePlant = (index) => {
     setPlants(prev => prev.filter((_, i) => i !== index));
     updateUserData('deletePlant');
+    setSelectedPlant(null); // Regresar a vista general si se borra la planta seleccionada
   };
 
   const addUpdate = (index) => {
@@ -203,8 +68,8 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     setEditUpdateIndex(null);
     const plant = plants[index];
     initialUpdateData.phase = plant.phase || '';
-    initialUpdateData.temperature = plant.temperature || '';
-    initialUpdateData.humidity = plant.humidity || '';
+    initialUpdateData.temperature = '';
+    initialUpdateData.humidity = '';
   };
 
   const saveUpdate = (e, update) => {
@@ -280,6 +145,51 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     });
   };
 
+  // Función para determinar la fase actual
+  const getCurrentPhase = (plant) => {
+    if (plant.updates && plant.updates.length > 0) {
+      const latestPhase = plant.updates.reduce((prev, curr) => {
+        if (curr.phase === 'floracion') return 'floracion';
+        if (curr.phase === 'vegetativa' && prev !== 'floracion') return 'vegetativa';
+        return prev || curr.phase;
+      }, null);
+      return latestPhase || plant.phase || 'semilla';
+    }
+    return plant.phase || 'semilla';
+  };
+
+  // Vista detallada de la planta
+  if (selectedPlant !== null) {
+    return (
+      <PlantDetail 
+        plant={plants[selectedPlant]}
+        selectedPlant={selectedPlant}
+        userData={userData}
+        getCurrentPhase={getCurrentPhase}
+        setActiveSection={setActiveSection}
+        setEditPlantIndex={setEditPlantIndex}
+        setIsEditFormVisible={setIsEditFormVisible}
+        deletePlant={deletePlant}
+        addUpdate={addUpdate}
+        deleteUpdate={deleteUpdate}
+        setUpdatePlantIndex={setUpdatePlantIndex}
+        setEditUpdateIndex={setEditUpdateIndex}
+        setIsUpdateFormVisible={setIsUpdateFormVisible}
+        isEditFormVisible={isEditFormVisible}
+        plants={plants}
+        editPlantIndex={editPlantIndex}
+        saveEditPlant={saveEditPlant}
+        isUpdateFormVisible={isUpdateFormVisible}
+        updatePlantIndex={updatePlantIndex}
+        editUpdateIndex={editUpdateIndex}
+        initialUpdateData={initialUpdateData}
+        saveUpdate={saveUpdate}
+        setSelectedPlant={setSelectedPlant} // Pasamos setSelectedPlant
+      />
+    );
+  }
+
+  // Vista general de plantas
   return (
     <>
       <button
@@ -289,6 +199,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
       >
         <i className="fas fa-leaf" style={{ fontSize: '24px' }}></i>
       </button>
+      
       {isFormVisible && (
         <PlantForm
           onSubmit={savePlant}
@@ -298,6 +209,19 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
           icon="fas fa-leaf"
         />
       )}
+      
+      <PlantList 
+        plants={plants}
+        isFormVisible={isFormVisible}
+        isEditFormVisible={isEditFormVisible}
+        isUpdateFormVisible={isUpdateFormVisible}
+        setSelectedPlant={setSelectedPlant}
+        setEditPlantIndex={setEditPlantIndex}
+        setIsEditFormVisible={setIsEditFormVisible}
+        deletePlant={deletePlant}
+        getCurrentPhase={getCurrentPhase}
+      />
+      
       {isEditFormVisible && (
         <PlantForm
           onSubmit={saveEditPlant}
@@ -307,68 +231,6 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
           icon="fas fa-edit"
         />
       )}
-      {isUpdateFormVisible && (
-        <UpdateForm
-          onSubmit={saveUpdate}
-          onCancel={() => setIsUpdateFormVisible(false)}
-          initialData={editUpdateIndex !== null ? plants[updatePlantIndex].updates[editUpdateIndex] : initialUpdateData}
-          isEdit={editUpdateIndex !== null}
-        />
-      )}
-      <ul id="plantList">
-        {plants.filter(p => !p.notes.includes("Ejemplo inicial")).length === 0 && !isFormVisible && !isEditFormVisible && !isUpdateFormVisible ? (
-          <li className="empty-card">
-            <i className="fas fa-box-open"></i>
-            <p>¡Aún no hay plantas por aquí!</p>
-            <p>Toca la hoja para agregar una nueva planta</p>
-          </li>
-        ) : (
-          plants.filter(p => !p.notes.includes("Ejemplo inicial")).slice(0, 5).map((plant, index) => (
-            <li key={index}>
-              <div className="plant-content">
-                <div className="plant-info">
-                  <h3><i className="fas fa-leaf"></i> {plant.name} ({plant.type})</h3>
-                  <p><strong>Inicio:</strong> {plant.startDate}</p>
-                  <p><strong>Fase:</strong> {plant.phase || 'Sin fase'}</p>
-                  {plant.temperature && <p><strong>Temperatura:</strong> {plant.temperature}°C</p>}
-                  {plant.humidity && <p><strong>Humedad:</strong> {plant.humidity}%</p>}
-                  <p><strong>Notas:</strong> {plant.notes || 'Sin notas'}</p>
-                </div>
-                <div className="plant-actions">
-                  <div className="btn-group">
-                    <button className="edit plant-btn" onClick={() => { setEditPlantIndex(index); setIsEditFormVisible(true); }}><i className="fas fa-edit"></i></button>
-                    <button className="add-update plant-btn" onClick={() => addUpdate(index)}><i className="fas fa-plus"></i></button>
-                    <button className={`stats ${userData.level >= 10 ? 'expert plant-btn' : 'locked plant-btn'}`} onClick={() => setActiveSection('stats')}><i className="fas fa-chart-bar"></i></button>
-                    <button className="delete plant-btn" onClick={() => deletePlant(index)}><i className="fas fa-trash"></i></button>
-                  </div>
-                  {plant.photo && <img src={plant.photo} alt={plant.name} onClick={() => window.showImage(plant.photo)} />}
-                </div>
-              </div>
-              {plant.updates && plant.updates.length > 0 && (
-                <div className="updates">
-                  <h3><i className="fas fa-history"></i> Cronología</h3>
-                  {plant.updates.map((update, updateIndex) => (
-                    <div className="update-card" key={updateIndex}>
-                      <div className="update-info">
-                        <p className="phase">{update.phase ? `(${update.phase})` : ''}</p>
-                        <p>{update.notes || ''} {update.temperature ? `${update.temperature}°C` : ''} {update.humidity ? `${update.humidity}%` : ''}</p>
-                        <p className="date">{update.date}</p>
-                      </div>
-                      <div className="update-actions">
-                        {update.photo && <img src={update.photo} alt="Actualización" onClick={() => window.showImage(update.photo)} />}
-                        <div className="btn-group">
-                          <button className="edit plant-btn" onClick={() => { setUpdatePlantIndex(index); setEditUpdateIndex(updateIndex); setIsUpdateFormVisible(true); }}><i className="fas fa-edit"></i></button>
-                          <button className="delete plant-btn" onClick={() => deleteUpdate(index, updateIndex)}><i className="fas fa-trash"></i></button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </li>
-          ))
-        )}
-      </ul>
     </>
   );
 }

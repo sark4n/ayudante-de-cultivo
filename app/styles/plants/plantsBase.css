@@ -1,0 +1,171 @@
+/* base.css - Estilos base y componentes comunes */
+
+/* Botón de añadir planta */
+#addPlantBtn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    background: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+  }
+  
+  #addPlantBtn:hover {
+    background: #388e3c;
+  }
+  
+  /* Lista de plantas */
+  ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+  }
+  
+  @media (min-width: 601px) {
+    ul {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+    }
+  }
+  
+  /* Botones de acción */
+  .plant-btn {
+    background: inherit;
+    color: inherit;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .plant-btn.edit {
+    background: #0288d1;
+    color: white;
+  }
+  
+  .plant-btn.delete {
+    background: #d32f2f;
+    color: white;
+  }
+  
+  .plant-btn.add-update {
+    background: #4caf50;
+    color: white;
+  }
+  
+  .plant-btn.stats {
+    background: #bdbdbd;
+  }
+  
+  .plant-btn.stats i {
+    color: #757575;
+  }
+  
+  .plant-btn.stats.expert {
+    background: #f57c00;
+  }
+  
+  .plant-btn.stats.expert i {
+    color: white;
+  }
+  
+  .plant-btn:hover {
+    opacity: 0.9;
+  }
+  
+  /* Tarjeta vacía */
+  .empty-card {
+    background: #f1f8e9;
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #c8e6c9;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .empty-card i {
+    font-size: 40px;
+    color: #4caf50;
+    margin-bottom: 15px;
+  }
+  
+  .empty-card p {
+    margin: 5px 0;
+    color: #388e3c;
+    font-size: 16px;
+  }
+  
+  /* Estilos para el modo oscuro */
+  body.dark .empty-card {
+    background: #344d34;
+    border-color: #4a704a;
+  }
+  
+  body.dark .empty-card i {
+    color: #81c784;
+  }
+  
+  body.dark .empty-card p {
+    color: #b0e0b0;
+  }
+  
+  body.dark .plant-btn.edit {
+    background: #0277bd;
+  }
+  
+  body.dark .plant-btn.delete {
+    background: #c62828;
+  }
+  
+  body.dark .plant-btn.add-update {
+    background: #2e7d32;
+  }
+  
+  body.dark .plant-btn.stats {
+    background: #757575;
+  }
+  
+  body.dark .plant-btn.stats i {
+    color: #e0e0e0;
+  }
+  
+  body.dark .plant-btn.stats.expert {
+    background: #e65100;
+  }
+  
+  /* Estilos para el contenedor del formulario (overlay) */
+  .form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }

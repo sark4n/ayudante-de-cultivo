@@ -1,0 +1,387 @@
+/* cards.css - Estilos para tarjetas de plantas y actualizaciones */
+
+/* Tarjeta de planta (vista general) */
+.plant-card-clickable {
+    position: relative;
+    background: linear-gradient(to right, #f8faf8, #e8f5e9);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #c8e6c9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  
+  .plant-card-clickable:hover {
+    transform: scale(1.02);
+  }
+  
+  .plant-card-clickable .plant-content {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    align-items: flex-start;
+    width: 100%;
+    padding: 0;
+  }
+  
+  .plant-card-clickable .plant-info {
+    flex: 1;
+    min-width: 160px;
+    max-width: 50%;
+    width: 160px;
+    word-wrap: break-word;
+    padding: 0;
+  }
+  
+  .plant-card-clickable .plant-info h3 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .plant-card-clickable .plant-info h3 i {
+    font-size: 20px;
+  }
+  
+  .plant-card-clickable .plant-info p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+  
+  .plant-card-clickable .plant-info p strong {
+    color: #388e3c;
+    font-weight: 600;
+  }
+  
+  .plant-card-clickable .plant-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 50%;
+    width: 170px;
+    max-width: 50%;
+    padding: 0;
+  }
+  
+  .plant-card-clickable .plant-actions .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .plant-card-clickable .plant-actions img {
+    max-width: 150px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid #c8e6c9;
+    margin-top: 10px;
+  }
+  
+  /* Vista detallada de planta */
+  .plant-detail {
+    padding: 15px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .plant-detail .plant-content {
+    background: linear-gradient(to right, #f8faf8, #e8f5e9);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #c8e6c9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .plant-detail .plant-info {
+    flex: 1;
+    min-width: 160px;
+    max-width: 50%;
+    width: 160px;
+    word-wrap: break-word;
+    padding: 0;
+  }
+  
+  .plant-detail .plant-info h3 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .plant-detail .plant-info h3 i {
+    font-size: 20px;
+  }
+  
+  .plant-detail .plant-info p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+  
+  .plant-detail .plant-info p strong {
+    color: #388e3c;
+    font-weight: 600;
+  }
+  
+  .plant-detail .plant-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 50%;
+    width: 170px;
+    max-width: 50%;
+    padding: 0;
+  }
+  
+  .plant-detail .plant-actions .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .plant-detail .plant-actions img {
+    max-width: 150px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid #c8e6c9;
+    margin-top: 10px;
+  }
+  
+  /* Actualizaciones en vista detallada */
+  .plant-detail .updates {
+    width: 100%;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .plant-detail .updates h3 {
+    font-size: 18px;
+    color: #2e7d32;
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .plant-detail .updates p {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .plant-detail .update-card {
+    background: linear-gradient(to right, #f1f8e9, #e8f5e9);
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #c8e6c9;
+    width: 100%;
+    max-width: 750px;
+    text-align: left;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    height: auto;
+  }
+  
+  .plant-detail .update-card .update-info {
+    flex: 1;
+    min-width: 150px;
+  }
+  
+  .plant-detail .update-card .update-info .phase {
+    font-size: 12px;
+    color: #388e3c;
+    margin: 0 0 5px;
+    font-weight: bold;
+  }
+  
+  .plant-detail .update-card .update-info p {
+    margin: 0;
+    font-size: 12px;
+    color: #555;
+    overflow-wrap: break-word;
+    line-height: 1.4;
+  }
+  
+  .plant-detail .update-card .update-info .date {
+    font-size: 12px;
+    color: #555;
+    margin-top: 5px;
+  }
+  
+  .plant-detail .update-card .update-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    min-width: 100px;
+  }
+  
+  .plant-detail .update-card .update-actions img {
+    max-width: 100px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid #c8e6c9;
+    margin-bottom: 5px;
+  }
+  
+  .plant-detail .update-card .btn-group {
+    position: static;
+    display: flex;
+    gap: 5px;
+  }
+  
+  .plant-detail .update-card .plant-btn.edit,
+  .plant-detail .update-card .plant-btn.delete {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+  
+  /* Modo oscuro para tarjetas */
+  body.dark .plant-card-clickable {
+    background: linear-gradient(to right, #2c3e2c, #1a2e1a);
+    border-color: #4a704a;
+  }
+  
+  body.dark .plant-card-clickable .plant-info h3 {
+    color: #b0e0b0;
+  }
+  
+  body.dark .plant-card-clickable .plant-info p {
+    color: #b0e0b0;
+  }
+  
+  body.dark .plant-card-clickable .plant-info p strong {
+    color: #81c784;
+  }
+  
+  body.dark .plant-card-clickable .plant-actions img {
+    border-color: #4a704a;
+  }
+  
+  body.dark .plant-detail .plant-content {
+    background: linear-gradient(to right, #2c3e2c, #1a2e1a);
+    border-color: #4a704a;
+  }
+  
+  body.dark .plant-detail .plant-info h3 {
+    color: #b0e0b0;
+  }
+  
+  body.dark .plant-detail .plant-info p {
+    color: #b0e0b0;
+  }
+  
+  body.dark .plant-detail .plant-info p strong {
+    color: #81c784;
+  }
+  
+  body.dark .plant-detail .plant-actions img {
+    border-color: #4a704a;
+  }
+  
+  body.dark .plant-detail .updates h3 {
+    color: #b0e0b0;
+  }
+  
+  body.dark .plant-detail .updates p {
+    color: #b0e0b0;
+  }
+  
+  body.dark .plant-detail .update-card {
+    background: linear-gradient(to right, #3c573c, #2c3e2c);
+    border-color: #5a805a;
+  }
+  
+  body.dark .plant-detail .update-card .update-info .phase {
+    color: #81c784;
+  }
+  
+  body.dark .plant-detail .update-card .update-info p {
+    color: #b0e0b0;
+  }
+  
+  body.dark .plant-detail .update-card .update-info .date {
+    color: #b0e0b0;
+  }
+  
+  body.dark .plant-detail .update-card .update-actions img {
+    border-color: #4a704a;
+  }
+  
+  /* Media queries para manejar resoluciones */
+  @media (max-width: 900px) {
+    .plant-card-clickable .plant-content,
+    .plant-detail .plant-content {
+      flex-direction: row;
+      gap: 0;
+    }
+  
+    .plant-card-clickable .plant-info,
+    .plant-detail .plant-info {
+      min-width: 160px;
+      max-width: 50%;
+      width: 160px;
+    }
+  
+    .plant-card-clickable .plant-actions,
+    .plant-detail .plant-actions {
+      align-items: flex-end;
+      width: 160px;
+      min-width: 160px;
+      max-width: 50%;
+    }
+  
+    .plant-card-clickable .plant-actions .btn-group,
+    .plant-detail .plant-actions .btn-group {
+      margin-bottom: 0;
+    }
+  
+    .plant-card-clickable .plant-actions img,
+    .plant-detail .plant-actions img {
+      margin-top: 10px;
+      width: 100%;
+      max-width: 150px;
+    }
+  
+    ul {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+  
+  @media (min-width: 901px) {
+    .plant-detail .updates {
+      margin-top: 20px;
+    }
+  }

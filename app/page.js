@@ -16,6 +16,7 @@ export default function Home() {
   const { data: session, status } = useSession();
   const [activeSection, setActiveSection] = useState('home');
   const [plants, setPlants] = useState([]);
+  const [selectedPlant, setSelectedPlant] = useState(null);
   const [userData, setUserData] = useState({
     achievements: [],
     missionProgress: {},
@@ -25,7 +26,6 @@ export default function Home() {
     level: 0,
     xp: 0,
     newAchievements: 0,
-    pendingMissionCompletions: 0,
   });
   const [achievementsData, setAchievementsData] = useState([]);
   const [pendingNotifications, setPendingNotifications] = useState([]);
@@ -144,12 +144,12 @@ export default function Home() {
 
   const handleSectionChange = (sectionId) => {
     setActiveSection(sectionId);
-    if (sectionId === 'missions') {
-      setUserData(prev => ({ ...prev, pendingMissionCompletions: 0 }));
+    if (sectionId === 'plants') {
+      setSelectedPlant(null);
     }
     if (sectionId === 'profile') {
       setUserData(prev => ({ ...prev, newAchievements: 0 }));
-    }
+    } 
   };
 
   const queueNotification = (type, name, icon = null, id = null, color = null) => {
@@ -184,12 +184,15 @@ export default function Home() {
           queueNotification={queueNotification}
           setSelectedAchievement={setSelectedAchievement}
           selectedAchievement={selectedAchievement}
+          selectedPlant={selectedPlant} // Pasamos selectedPlant
+          setSelectedPlant={setSelectedPlant} // Pasamos setSelectedPlant
         />
         <Footer 
           activeSection={activeSection} 
           handleSectionChange={handleSectionChange} 
           userData={userData} 
           pendingMissionsCount={pendingMissionsCount()}
+          resetSelectedPlant={() => setSelectedPlant(null)} // Pasamos la función correctamente
         />
         <ImageModal />
         <ToastContainer position="bottom-right" />

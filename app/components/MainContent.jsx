@@ -16,6 +16,8 @@ export default function MainContent({
   queueNotification,
   setSelectedAchievement,
   selectedAchievement,
+  selectedPlant,
+  setSelectedPlant,
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -283,6 +285,8 @@ export default function MainContent({
           setUserData={setUserData}
           setActiveSection={setActiveSection}
           queueNotification={queueNotification}
+          selectedPlant={selectedPlant}
+          setSelectedPlant={setSelectedPlant}
         />
       </section>
 

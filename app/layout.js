@@ -7,7 +7,11 @@ import './styles/reset.css';
 import './styles/layout.css';
 import './styles/auth.css';
 import './styles/modal.css';
-import './styles/plants.css';
+
+import './styles/plants/plantsBase.css';
+import './styles/plants/plantsCards.css';
+import './styles/plants/plantsForms.css';
+
 import './styles/stats.css';
 import './styles/achievements.css';
 import './styles/profile.css';
