@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import PlantForm from '../components/plants/PlantForm'
+import PlantForm from '../components/plants/PlantForm';
 import UpdateForm from '../components/plants/UpdateForm';
 import PlantList from '../components/plants/PlantList';
 import PlantDetail from '../components/plants/PlantDetail';
@@ -40,7 +40,8 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
       alert('Límite temporal de 5 plantas alcanzado.');
       return;
     }
-    setPlants(prev => [...prev, newPlant]);
+    const plantWithUpdates = { ...newPlant, updates: [] }; // Aseguramos que updates sea un array vacío
+    setPlants(prev => [...prev, plantWithUpdates]);
     updateUserData('addPlant');
     setIsFormVisible(false);
   };
@@ -49,7 +50,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     e.preventDefault();
     const updatedPlants = [...plants];
     const oldPhase = updatedPlants[editPlantIndex].phase;
-    updatedPlants[editPlantIndex] = editedPlant;
+    updatedPlants[editPlantIndex] = { ...editedPlant, updates: updatedPlants[editPlantIndex].updates || [] }; // Preservamos updates
     setPlants(updatedPlants);
     if (oldPhase !== editedPlant.phase) updateUserData('editPlant');
     setIsEditFormVisible(false);
@@ -76,7 +77,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     e.preventDefault();
     const updatedPlants = [...plants];
     const plant = updatedPlants[updatePlantIndex];
-    if (!plant.updates) plant.updates = [];
+    if (!plant.updates) plant.updates = []; // Aseguramos que updates sea un array
     if (editUpdateIndex !== null) {
       plant.updates[editUpdateIndex] = update;
     } else {
@@ -91,6 +92,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
 
   const deleteUpdate = (plantIndex, updateIndex) => {
     const updatedPlants = [...plants];
+    if (!updatedPlants[plantIndex].updates) updatedPlants[plantIndex].updates = []; // Aseguramos que updates exista
     updatedPlants[plantIndex].updates.splice(updateIndex, 1);
     setPlants(updatedPlants);
     updateUserData('deleteUpdate');
@@ -107,7 +109,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
         const startDate = new Date(plant.startDate);
         let latestUpdateDate = startDate;
         if (plant.updates && plant.updates.length > 0) {
-          latestUpdateDate = new Date(Math.max(...plant.updates.map(u => new Date(u.date))));
+          latestUpdateDate = new Date(Math.max(...plant.updates.map(u => new Date(u.date).getTime())));
         }
         const daysActive = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
         maxPlantDays = Math.max(maxPlantDays, daysActive);
@@ -184,12 +186,14 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
         editUpdateIndex={editUpdateIndex}
         initialUpdateData={initialUpdateData}
         saveUpdate={saveUpdate}
-        setSelectedPlant={setSelectedPlant} // Pasamos setSelectedPlant
+        setPlants={setPlants}
+        setSelectedPlant={setSelectedPlant}
+        setUserData={setUserData}
+        queueNotification={queueNotification}
       />
     );
   }
 
-  // Vista general de plantas
   return (
     <>
       <button
@@ -220,6 +224,10 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
         setIsEditFormVisible={setIsEditFormVisible}
         deletePlant={deletePlant}
         getCurrentPhase={getCurrentPhase}
+        userData={userData}
+        setUserData={setUserData}
+        queueNotification={queueNotification}
+        setPlants={setPlants}
       />
       
       {isEditFormVisible && (
@@ -229,6 +237,15 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
           initialData={plants[editPlantIndex]}
           title="Editar Planta"
           icon="fas fa-edit"
+        />
+      )}
+
+      {isUpdateFormVisible && (
+        <UpdateForm
+          onSubmit={saveUpdate}
+          onCancel={() => setIsUpdateFormVisible(false)}
+          initialData={editUpdateIndex !== null ? plants[updatePlantIndex].updates[editUpdateIndex] : initialUpdateData}
+          isEdit={editUpdateIndex !== null}
         />
       )}
     </>

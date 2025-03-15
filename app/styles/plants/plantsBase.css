@@ -69,6 +69,11 @@
     background: #d32f2f;
     color: white;
   }
+
+  .plant-btn.gallery {
+    background: #aa04f7;
+    color: rgb(255, 255, 255);
+  }
   
   .plant-btn.add-update {
     background: #4caf50;

@@ -109,13 +109,20 @@ export default function Home() {
     }
   }, [userData, plants, status, session]);
 
+  const queueNotification = (type, name, icon = null, id = null, color = null) => {
+    setPendingNotifications(prev => {
+      if (prev.some(notif => notif.type === type && notif.name === name)) return prev;
+      return [...prev, { type, name, icon, id, color }];
+    });
+  };
+
   useEffect(() => {
     if (pendingNotifications.length > 0) {
       pendingNotifications.forEach(({ type, name, icon, id, color }) => {
         const message = (
           <div className="flex items-center gap-2">
-            {icon && <i className={icon} style={{ color: type === 'achievement' ? '#FFFFFF' : '#4caf50' }}></i>}
-            <span>{type === 'mission' ? `Misión completada: ${name}` : `Logro desbloqueado: ${name}`}</span>
+            {icon && <i className={icon} style={{ color: type === 'achievement' ? '#FFFFFF' : type === 'warning' ? '#ff9800' : '#4caf50' }}></i>}
+            <span>{type === 'mission' && !name.includes('Riego Exitoso') ? `Misión completada: ${name}` : name}</span>
           </div>
         );
         const toastOptions = {
@@ -136,6 +143,8 @@ export default function Home() {
             style: { backgroundColor: color, color: '#FFFFFF' },
           });
           setUserData(prev => ({ ...prev, newAchievements: (prev.newAchievements || 0) + 1 }));
+        } else if (type === 'warning') {
+          toast.warning(message, toastOptions);
         }
       });
       setPendingNotifications([]);
@@ -150,13 +159,6 @@ export default function Home() {
     if (sectionId === 'profile') {
       setUserData(prev => ({ ...prev, newAchievements: 0 }));
     } 
-  };
-
-  const queueNotification = (type, name, icon = null, id = null, color = null) => {
-    setPendingNotifications(prev => {
-      if (prev.some(notif => notif.type === type && notif.name === name)) return prev;
-      return [...prev, { type, name, icon, id, color }];
-    });
   };
 
   if (status === 'loading') {
@@ -184,15 +186,15 @@ export default function Home() {
           queueNotification={queueNotification}
           setSelectedAchievement={setSelectedAchievement}
           selectedAchievement={selectedAchievement}
-          selectedPlant={selectedPlant} // Pasamos selectedPlant
-          setSelectedPlant={setSelectedPlant} // Pasamos setSelectedPlant
+          selectedPlant={selectedPlant}
+          setSelectedPlant={setSelectedPlant}
         />
         <Footer 
           activeSection={activeSection} 
           handleSectionChange={handleSectionChange} 
           userData={userData} 
           pendingMissionsCount={pendingMissionsCount()}
-          resetSelectedPlant={() => setSelectedPlant(null)} // Pasamos la función correctamente
+          resetSelectedPlant={() => setSelectedPlant(null)}
         />
         <ImageModal />
         <ToastContainer position="bottom-right" />

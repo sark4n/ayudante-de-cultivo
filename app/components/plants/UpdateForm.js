@@ -15,11 +15,12 @@ export default function UpdateForm({ onSubmit, onCancel, initialData, isEdit }) 
     }
   };
 
+  const onFormSubmit = (data) => {
+    onSubmit({ preventDefault: () => {} }, data); // Pasamos un evento simulado y los datos
+  };
+
   return (
-    <form
-      className="form-overlay"
-      onSubmit={handleSubmit((data) => onSubmit({ preventDefault: () => {} }, data))}
-    >
+    <form className="form-overlay" onSubmit={handleSubmit(onFormSubmit)}>
       <div className="plant-form">
         <h2>
           <i className={isEdit ? 'fas fa-edit' : 'fas fa-plus'}></i> {isEdit ? 'Editar Actualización' : 'Agregar Actualización'}

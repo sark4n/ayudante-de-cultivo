@@ -77,17 +77,26 @@ export default function MainContent({
   const nextLevelXp = levels[currentLevel + 1] || levels[currentLevel];
   const xpProgress = (currentXp / nextLevelXp) * 100;
 
+  const getCurrentPhase = (plant) => {
+    if (!plant.updates || plant.updates.length === 0) return plant.phase || 'Semilla';
+    const latestUpdate = plant.updates.reduce((latest, current) => {
+      return new Date(current.date) > new Date(latest.date) ? current : latest;
+    });
+    return latestUpdate.phase || plant.phase || 'Semilla';
+  };
+
   const featuredPlant = plants.length > 0
     ? plants.reduce((prev, current) => {
-        const prevUpdates = prev.updates ? prev.updates.length : 0;
-        const currUpdates = current.updates ? current.updates.length : 0;
-        const prevLatest = prev.updates && prev.updates.length > 0
-          ? Math.max(...prev.updates.map(u => new Date(u.date).getTime()))
+        const prevUpdates = prev.updates || []; // Aseguramos que sea un array
+        const currUpdates = current.updates || []; // Aseguramos que sea un array
+        const prevLatest = prevUpdates.length > 0
+          ? Math.max(...prevUpdates.map(u => new Date(u.date).getTime()))
           : new Date(prev.startDate).getTime();
-        const currLatest = current.updates && current.updates.length > 0
-          ? Math.max(...current.updates.map(u => new Date(u.date).getTime()))
+        const currLatest = currUpdates.length > 0
+          ? Math.max(...currUpdates.map(u => new Date(u.date).getTime()))
           : new Date(current.startDate).getTime();
-        return (currUpdates > prevUpdates || (currUpdates === prevUpdates && currLatest > prevLatest))
+        return (currUpdates.length > prevUpdates.length || 
+                (currUpdates.length === prevUpdates.length && currLatest > prevLatest))
           ? current
           : prev;
       }, plants[0])
@@ -243,7 +252,6 @@ export default function MainContent({
           </div>
         </div>
 
-        {/* Notificación de Oferta del Día */}
         <div className="daily-offer-notification">
           <i className="fas fa-gift offer-icon"></i>
           <div className="offer-content">
@@ -258,7 +266,6 @@ export default function MainContent({
           </button>
         </div>
 
-        {/* Widget de Comunidad */}
         <div className="community-widget">
           <h3><i className="fas fa-users"></i> Comunidad Activa</h3>
           <div
@@ -276,7 +283,6 @@ export default function MainContent({
         <p className="footer-text">Tu compañero para gestionar tus cultivos de manera fácil y discreta.</p>
       </section>
 
-      {/* Resto de las secciones sin cambios */}
       <section id="plants" className={activeSection === "plants" ? "active" : "hidden"}>
         <Plants
           plants={plants}
