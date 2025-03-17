@@ -1,4 +1,4 @@
-// este route.js esta ubicando en user/update/route.jsx
+
 
 import clientPromise from '../../../lib/mongodb';
 import { getServerSession } from 'next-auth/next';

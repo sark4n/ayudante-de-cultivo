@@ -82,7 +82,6 @@ export default function PlantList({
       return;
     }
 
-    // Marcar como chequeado y llevar a detalles
     setUserData(prev => {
       const missionProgress = { ...prev.missionProgress };
       const currentProgress = missionProgress["checkPlant"] || 0;
@@ -99,7 +98,7 @@ export default function PlantList({
       return updatedPlants;
     });
 
-    setSelectedPlant(index); // Llevar a los detalles
+    setSelectedPlant(index);
   };
 
   const handleUpdatePlant = (plant, index) => {
@@ -110,10 +109,20 @@ export default function PlantList({
       const timeRemaining = getTimeRemaining(plant.lastUpdated);
       queueNotification('warning', `Ya actualizaste ${plant.name} hoy, actualiza nuevamente en ${timeRemaining}`, 'fas fa-exclamation-triangle');
     } else {
-      setSelectedPlant(index); // Llevar a detalles para actualizar
+      setSelectedPlant(index);
     }
   };
-  
+
+  const handleTogglePublic = (index) => {
+    setPlants(prevPlants => {
+      const updatedPlants = [...prevPlants];
+      const plant = updatedPlants[index];
+      updatedPlants[index] = { ...plant, isPublic: !plant.isPublic };
+      queueNotification('info', `${plant.name} ahora es ${!plant.isPublic ? 'privada' : 'pública'}`, `fas fa-lock${!plant.isPublic ? '' : '-open'}`);
+      return updatedPlants;
+    });
+  };
+
   if (filteredPlants.length === 0 && !isFormVisible && !isEditFormVisible && !isUpdateFormVisible) {
     return (
       <ul id="plantList">
@@ -133,6 +142,7 @@ export default function PlantList({
         const isWateredToday = plant.lastWatered && new Date(plant.lastWatered).toLocaleDateString() === today;
         const isCheckedToday = plant.lastChecked && new Date(plant.lastChecked).toLocaleDateString() === today;
         const isUpdatedToday = plant.lastUpdated && new Date(plant.lastUpdated).toLocaleDateString() === today;
+        const isPublic = plant.isPublic || false;
 
         return (
           <li
@@ -178,6 +188,15 @@ export default function PlantList({
                     }}
                   >
                     <i className="fas fa-sync-alt"></i>
+                  </button>
+                  <button 
+                    className={`public plant-btn ${isPublic ? 'public-on' : 'public-off'}`} 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      handleTogglePublic(index); 
+                    }}
+                  >
+                    <i className={`fas fa-lock${isPublic ? '-open' : ''}`}></i>
                   </button>
                 </div>
               </div>

@@ -1,0 +1,105 @@
+/* Estilos para el footer */
+.tab-btn {
+    position: relative;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    width: 60px;
+  }
+  
+  .tab-btn[data-tab="profile"] {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    width: 60px;
+  }
+  
+  .tab-btn[data-tab="profile"] .profile-img {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 1px solid #c8e6c9;
+  }
+  
+  body.dark .tab-btn[data-tab="profile"] .profile-img {
+    border-color: #4a704a;
+  }
+  
+  .tab-btn span {
+    font-size: 12px;
+    color: inherit;
+  }
+  
+  .tab-btn[data-tab="profile"] span {
+    font-size: 12px;
+    color: inherit;
+  }
+  
+  /* Indicador de notificación no leída */
+  .notification-dot {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: #d32f2f;
+    border-radius: 50%;
+    border: 1px solid rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 10;
+  }
+  
+  body.dark .notification-dot {
+    background: #ef5350;
+    border-color: #2c3e2c;
+    color: white;
+  }
+  
+  /* Media query para móvil */
+  @media (max-width: 600px) {
+    .notification-dot {
+      top: -3px;
+      right: -3px;
+    }
+  }
+  
+  .tab-btn .notification-dot {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: #d32f2f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff !important;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 10;
+  }
+  
+  body.dark .tab-btn .notification-dot {
+    background: #ef5350;
+    color: #ffffff !important;
+  }
+  
+  /* Media query para móvil */
+  @media (max-width: 600px) {
+    .tab-btn .notification-dot {
+      top: -3px;
+      right: -3px;
+    }
+  }

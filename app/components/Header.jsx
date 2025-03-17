@@ -1,5 +1,7 @@
 "use client";
 
+import { toggleDarkMode } from '../lib/navigation';
+
 export default function Header({ activeSection }) {
   const iconMap = {
     home: "home",
@@ -22,11 +24,14 @@ export default function Header({ activeSection }) {
   };
 
   return (
-    <header className="header"> {/* Añadí clase 'header' para consistencia con CSS */}
+    <header className="header">
       <h1>
         <i className={`fas fa-${iconMap[activeSection]}`}></i>
         {titleMap[activeSection]}
       </h1>
+      <button className="dark-mode-btn" onClick={toggleDarkMode}>
+        <i className={document.body.classList.contains('dark') ? 'fas fa-moon' : 'fas fa-sun'}></i>
+      </button>
     </header>
   );
 }

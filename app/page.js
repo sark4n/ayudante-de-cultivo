@@ -3,6 +3,7 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import { showTipOfTheDay } from './lib/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,6 +15,7 @@ import ImageModal from './components/ImageModal';
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
   const [activeSection, setActiveSection] = useState('home');
   const [plants, setPlants] = useState([]);
   const [selectedPlant, setSelectedPlant] = useState(null);
@@ -26,6 +28,7 @@ export default function Home() {
     level: 0,
     xp: 0,
     newAchievements: 0,
+    pendingMissionCompletions: 0, // Lo mantenemos por compatibilidad, pero no lo usaremos en el conteo
   });
   const [achievementsData, setAchievementsData] = useState([]);
   const [pendingNotifications, setPendingNotifications] = useState([]);
@@ -44,32 +47,11 @@ export default function Home() {
     fetchAchievements();
   }, []);
 
-  const dailyMissions = [
-    { id: "checkPlant", name: "Chequear Planta", xp: 10, target: 1, icon: "fas fa-eye" },
-    { id: "waterPlant", name: "Regar Planta", xp: 15, target: 1, icon: "fas fa-tint" },
-    { id: "updatePlant", name: "Actualizar Planta", xp: 20, target: 1, icon: "fas fa-sync-alt" },
-  ];
-
-  const pendingMissionsCount = () => {
-    let count = 0;
-    const allMissions = [
-      ...dailyMissions,
-      ...achievementsData.flatMap(ach => ach.missions),
-    ];
-    allMissions.forEach(mission => {
-      const progress = userData.missionProgress[mission.id] || 0;
-      const completed = userData.missionProgress[`${mission.id}_completed`] || false;
-      if (progress >= mission.target && !completed) {
-        count++;
-      }
-    });
-    return count;
-  };
-
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
       console.log("Cargando datos de sesión:", session.user);
-      setUserData({
+      setUserData(prev => ({
+        ...prev,
         achievements: session.user.achievements || [],
         missionProgress: session.user.missionProgress || {},
         profilePhoto: session.user.profilePhoto || session.user.image || null,
@@ -79,11 +61,21 @@ export default function Home() {
         xp: session.user.xp || 0,
         newAchievements: session.user.newAchievements || 0,
         pendingMissionCompletions: session.user.pendingMissionCompletions || 0,
-      });
+      }));
       setPlants(session.user.plants || []);
-      showTipOfTheDay();
     }
   }, [session, status]);
+
+  useEffect(() => {
+    const selectedId = searchParams.get('selectedId');
+    if (selectedId && plants.length > 0) {
+      const index = plants.findIndex(plant => plant.id === selectedId);
+      if (index !== -1) {
+        setSelectedPlant(index);
+        setActiveSection('plants');
+      }
+    }
+  }, [searchParams, plants]);
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
@@ -151,6 +143,25 @@ export default function Home() {
     }
   }, [pendingNotifications]);
 
+  const dailyMissions = [
+    { id: "checkPlant", name: "Chequear Planta", xp: 10, target: 1, icon: "fas fa-eye" },
+    { id: "waterPlant", name: "Regar Planta", xp: 15, target: 1, icon: "fas fa-tint" },
+    { id: "updatePlant", name: "Actualizar Planta", xp: 20, target: 1, icon: "fas fa-sync-alt" },
+  ];
+
+  const pendingMissionsCount = userData && achievementsData ? (() => {
+    let count = 0;
+    const allMissions = [...dailyMissions, ...achievementsData.flatMap(ach => ach.missions)];
+    allMissions.forEach(mission => {
+      const progress = userData.missionProgress[mission.id] || 0;
+      const completed = userData.missionProgress[`${mission.id}_completed`] || false;
+      if (progress >= mission.target && !completed) {
+        count++;
+      }
+    });
+    return count; // Eliminamos la suma de pendingMissionCompletions
+  })() : 0;
+
   const handleSectionChange = (sectionId) => {
     setActiveSection(sectionId);
     if (sectionId === 'plants') {
@@ -193,7 +204,7 @@ export default function Home() {
           activeSection={activeSection} 
           handleSectionChange={handleSectionChange} 
           userData={userData} 
-          pendingMissionsCount={pendingMissionsCount()}
+          pendingMissionsCount={pendingMissionsCount}
           resetSelectedPlant={() => setSelectedPlant(null)}
         />
         <ImageModal />

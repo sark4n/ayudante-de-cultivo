@@ -5,6 +5,7 @@ import Plants from "../plants/page";
 import Missions from "../missions/page";
 import Stats from "./Stats";
 import Profile from "../profile/page";
+import Community from "../community/page";
 
 export default function MainContent({
   activeSection,
@@ -23,10 +24,10 @@ export default function MainContent({
 
   const slides = [
     {
-      title: "¡Desbloquea Estadisticas Avanzadas!",
-      text: "Accede a prediccion de cosecha y más.",
+      title: "¡Desbloquea Estadísticas Avanzadas!",
+      text: "Accede a predicción de cosecha y más.",
       image: "/images/premium-tool.jpg",
-      cta: "Conoce Mas",
+      cta: "Conoce Más",
       action: "plants",
     },
     {
@@ -56,21 +57,6 @@ export default function MainContent({
     setCurrentSlide(index);
   };
 
-  const pendingMissionsCount = () => {
-    const dailyMissions = [
-      { id: "checkPlant", target: 1 },
-      { id: "waterPlant", target: 1 },
-      { id: "updatePlant", target: 1 },
-    ];
-    let count = 0;
-    dailyMissions.forEach(mission => {
-      const progress = userData.missionProgress[mission.id] || 0;
-      const completed = userData.missionProgress[`${mission.id}_completed`] || false;
-      if (progress >= mission.target && !completed) count++;
-    });
-    return count + (userData.pendingMissionCompletions || 0);
-  };
-
   const levels = [0, 100, 250, 450, 700, 1000, 1350, 1750, 2200, 2700, 3250];
   const currentLevel = userData.level || 0;
   const currentXp = userData.xp || 0;
@@ -87,8 +73,8 @@ export default function MainContent({
 
   const featuredPlant = plants.length > 0
     ? plants.reduce((prev, current) => {
-        const prevUpdates = prev.updates || []; // Aseguramos que sea un array
-        const currUpdates = current.updates || []; // Aseguramos que sea un array
+        const prevUpdates = prev.updates || [];
+        const currUpdates = current.updates || [];
         const prevLatest = prevUpdates.length > 0
           ? Math.max(...prevUpdates.map(u => new Date(u.date).getTime()))
           : new Date(prev.startDate).getTime();
@@ -146,7 +132,7 @@ export default function MainContent({
           <div className="summary-details">
             <p><i className="fas fa-user"></i> Nivel: {currentLevel}</p>
             <p><i className="fas fa-leaf"></i> Plantas: {plants.length}</p>
-            <p><i className="fas fa-trophy"></i> Misiones pendientes: {pendingMissionsCount()}</p>
+            <p><i className="fas fa-trophy"></i> Misiones pendientes: {dailyMissions.filter(m => (userData.missionProgress[m.id] || 0) >= m.target && !userData.missionProgress[`${m.id}_completed`]).length}</p>
           </div>
           <div className="xp-bar">
             <div
@@ -308,7 +294,10 @@ export default function MainContent({
       </section>
 
       <section id="community" className={activeSection === "community" ? "active" : "hidden"}>
-        <p>Sección de Comunidad - Próximamente</p>
+        <Community
+          queueNotification={queueNotification}
+          setActiveSection={setActiveSection}
+        />
       </section>
 
       <section id="missions" className={activeSection === "missions" ? "active" : "hidden"}>
@@ -339,6 +328,7 @@ export default function MainContent({
           plants={plants}
           setPlants={setPlants}
           setActiveSection={setActiveSection}
+          queueNotification={queueNotification}
         />
       </section>
     </main>

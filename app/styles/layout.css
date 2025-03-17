@@ -10,7 +10,7 @@ section {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
-  padding-bottom: 80px; /* Base para evitar superposición con el footer */
+  padding-bottom: 80px;
 }
 
 body.dark section {
@@ -20,7 +20,7 @@ body.dark section {
 
 /* Ajuste específico para #home */
 section#home {
-  padding-bottom: 100px; /* Más espacio para evitar que CTA se superponga al footer */
+  padding-bottom: 100px;
 }
 
 /* Visibilidad */
@@ -66,9 +66,36 @@ header h1 {
   padding-left: 50px;
 }
 
+.dark-mode-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #388e3c;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-right: 15px; /* Movido un poco a la izquierda */
+}
+
+.dark-mode-btn:hover {
+  background: #2e7d32;
+}
+
+body.dark .dark-mode-btn {
+  background: #66bb6a;
+}
+
+body.dark .dark-mode-btn:hover {
+  background: #4caf50;
+}
+
 /* Contenido principal */
 #appScreen {
-  margin-top: 60px; /* Igual a la altura del header */
+  margin-top: 60px;
 }
 
 /* Footer */
@@ -82,8 +109,8 @@ footer {
   padding: 5px 0;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   transition: opacity 0.3s;
-  height: 60px; /* Altura fija para consistencia */
-  z-index: 1000; /* Sobre el contenido */
+  height: 60px;
+  z-index: 1000;
 }
 
 body.dark footer {

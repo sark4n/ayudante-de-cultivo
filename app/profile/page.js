@@ -2,12 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
-import { toggleDarkMode } from '../lib/navigation';
-import '../styles/achievements.css'; // Para reutilizar estilos de logros
 
 export default function Profile({ userData, setUserData, plants, setPlants, setActiveSection }) {
   const { data: session, status } = useSession();
   const [achievements, setAchievements] = useState([]);
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [bio, setBio] = useState(userData.bio || '');
+  const [theme, setTheme] = useState(userData.theme || 'default');
+  const [isOnline, setIsOnline] = useState(userData.isOnline || false);
+  const [allowMessages, setAllowMessages] = useState(userData.allowMessages !== false);
 
   useEffect(() => {
     const fetchAchievements = async () => {
@@ -30,60 +35,115 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
         email: session?.user?.email,
         level: session?.user?.level || 0,
         xp: session?.user?.xp || 0,
+        profilePhoto: session?.user?.profilePhoto || prev.profilePhoto,
+        bio: session?.user?.bio || prev.bio || '',
+        theme: session?.user?.theme || prev.theme || 'default',
+        isOnline: session?.user?.isOnline ?? prev.isOnline ?? false,
+        allowMessages: session?.user?.allowMessages ?? prev.allowMessages ?? true,
       }));
     }
   }, [session, status, setUserData]);
 
-  const changeProfilePhoto = () => {
+  useEffect(() => {
     if (status === 'authenticated') {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const img = new Image();
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            img.src = e.target.result;
-            img.onload = () => {
-              const canvas = document.createElement('canvas');
-              let width = img.width;
-              let height = img.height;
-              const maxSize = 200;
-              if (width > height) {
-                if (width > maxSize) {
-                  height *= maxSize / width;
-                  width = maxSize;
-                }
-              } else {
-                if (height > maxSize) {
-                  width *= maxSize / height;
-                  height = maxSize;
-                }
-              }
-              canvas.width = width;
-              canvas.height = height;
-              const ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, width, height);
-              const resizedData = canvas.toDataURL('image/jpeg', 0.7);
-              setUserData(prev => ({ ...prev, profilePhoto: resizedData }));
-            };
-          };
-          reader.readAsDataURL(file);
+      const updateUserData = async () => {
+        try {
+          const response = await fetch('/api/user/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userData: { ...userData, bio, theme, isOnline, allowMessages }, plants }),
+          });
+          if (!response.ok) throw new Error('Error al actualizar datos');
+        } catch (error) {
+          console.error('Error al persistir datos:', error);
         }
       };
-      input.click();
-    } else {
-      alert("No puedes cambiar la foto de perfil sin estar autenticado.");
+      updateUserData();
     }
+  }, [bio, theme, isOnline, allowMessages, status, userData, plants]);
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      processPhoto(file);
+    }
+    setIsPhotoModalOpen(false);
+  };
+
+  const handleCameraCapture = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        processPhoto(file);
+      }
+      setIsPhotoModalOpen(false);
+    };
+    input.click();
+  };
+
+  const processPhoto = (file) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxSize = 200;
+        if (width > height) {
+          if (width > maxSize) {
+            height *= maxSize / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width *= maxSize / height;
+            height = maxSize;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const resizedData = canvas.toDataURL('image/jpeg', 0.7);
+        setUserData(prev => ({ ...prev, profilePhoto: resizedData }));
+      };
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleEditSave = () => {
+    setUserData(prev => ({ ...prev, bio, theme, isOnline, allowMessages }));
+    setIsEditModalOpen(false);
   };
 
   const logout = () => {
     signOut({ redirect: true, callbackUrl: '/' }).then(() => {
-      setUserData({ achievements: [], missionProgress: {}, profilePhoto: null, name: '', email: '', level: 0, xp: 0, newAchievements: 0 });
+      setUserData({ achievements: [], missionProgress: {}, profilePhoto: null, name: '', email: '', level: 0, xp: 0, newAchievements: 0, bio: '', theme: 'default', isOnline: false, allowMessages: true });
       setPlants([]);
     });
+  };
+
+  const handlePlantClick = (plantId) => {
+    const index = plants.findIndex(plant => plant.id === plantId);
+    if (index !== -1) {
+      setActiveSection('plants');
+      setPlants(prevPlants => {
+        const updatedPlants = [...prevPlants];
+        return updatedPlants;
+      });
+      setTimeout(() => {
+        const plantElement = document.querySelector(`#plantList li:nth-child(${index + 1})`);
+        if (plantElement) {
+          plantElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
   };
 
   const xpToNextLevel = () => {
@@ -98,74 +158,199 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
   }
 
   return (
-    <section id="profile" className={status === 'authenticated' ? '' : 'hidden'} style={{ textAlign: 'center', padding: '20px', position: 'relative' }}>
-      <button
-        className="dark-mode-btn absolute top-10 right-55 bg-green-500 text-white w-35 h-35 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors dark:bg-green-600 dark:hover:bg-green-700"
-        onClick={toggleDarkMode}
-      >
-        <i className={document.body.classList.contains('dark') ? 'fas fa-moon' : 'fas fa-sun'}></i>
-      </button>
-      <button
-        className="logout-btn absolute top-10 right-10 bg-red-500 text-white w-35 h-35 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors dark:bg-red-600 dark:hover:bg-red-700"
-        onClick={logout}
-      >
-        <i className="fas fa-sign-out-alt"></i>
-      </button>
-      <div
-        id="profilePhoto"
-        className="w-100 h-100 rounded-full border-2 border-white bg-green-100 flex items-center justify-center overflow-hidden cursor-pointer mx-auto mb-15 relative dark:border-green-900 dark:bg-green-800"
-        onClick={changeProfilePhoto}
-      >
-        {userData.profilePhoto ? (
-          <img src={userData.profilePhoto} alt="Foto de Perfil" className="w-full h-full object-cover" />
-        ) : (
-          <i className="fas fa-user" style={{ fontSize: '40px', color: '#4caf50' }}></i>
-        )}
-      </div>
-      <h2 className="text-green-700 dark:text-green-300">{userData.name || 'Usuario no autenticado'}</h2>
-      <div className="level-section mt-20">
-        <h3 className="text-green-700 dark:text-green-300 flex items-center justify-center gap-5">
-          <i className="fas fa-star"></i> Nivel {userData.level}
-        </h3>
-        <div className="progress-bar" style={{ width: '250px', margin: '15px auto', background: '#e0e0e0', borderRadius: '10px', overflow: 'hidden', position: 'relative', height: '25px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-          <div
-            className="progress"
-            style={{
-              width: `${(userData.xp / xpToNextLevel()) * 100}%`,
-              height: '100%',
-              background: 'linear-gradient(to right, #4caf50, #66bb6a)',
-              borderRadius: '10px',
-              transition: 'width 0.5s ease-in-out',
-            }}
-          ></div>
-          <span className="progress-text" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#fff', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
-            {userData.xp} / {xpToNextLevel()} XP
-          </span>
+    <section id="profile" className={status === 'authenticated' ? '' : 'hidden'}>
+      <div className="profile-header">
+        <div className={`profile-card ${theme}`}>
+          <div className="profile-top">
+            <div className="profile-photo-wrapper">
+              <div
+                className="profile-photo"
+                onClick={() => status === 'authenticated' ? setIsPhotoModalOpen(true) : alert("No puedes cambiar la foto sin estar autenticado.")}
+                style={{ backgroundImage: userData.profilePhoto ? `url(${userData.profilePhoto})` : 'none' }}
+              >
+                {!userData.profilePhoto && (
+                  <i className="fas fa-user" style={{ fontSize: '60px', color: '#4caf50' }}></i>
+                )}
+                <div className="photo-overlay">
+                  <i className="fas fa-camera"></i>
+                </div>
+              </div>
+              <span className="level-badge">{userData.level}</span>
+            </div>
+            <div className="profile-info">
+              <h1 className="profile-name">{userData.name || 'Usuario no autenticado'}</h1>
+              <p className="profile-bio">{bio || 'Añade una bio en Editar Perfil'}</p>
+            </div>
+            <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
+          </div>
+          <div className="xp-bar">
+            <div
+              className="xp-progress"
+              style={{ width: `${(userData.xp / xpToNextLevel()) * 100}%` }}
+            ></div>
+            <span className="xp-text">{userData.xp} / {xpToNextLevel()} XP</span>
+          </div>
+          <button className="settings-btn" onClick={() => setIsSettingsOpen(!isSettingsOpen)}>
+            <i className="fas fa-cog"></i>
+          </button>
+          {isSettingsOpen && (
+            <div className="settings-menu">
+              <button className="menu-item" onClick={() => { setIsEditModalOpen(true); setIsSettingsOpen(false); }}>
+                <i className="fas fa-edit"></i> Editar Perfil
+              </button>
+              <button className="menu-item" onClick={logout}>
+                <i className="fas fa-sign-out-alt"></i> Finalizar Sesión
+              </button>
+            </div>
+          )}
         </div>
       </div>
-      <h3 className="flex items-center justify-center gap-5 text-green-700 mt-20 mb-15 dark:text-green-300">
-        <i className="fas fa-trophy"></i> Mis Trofeos
-      </h3>
-      <div id="profileAchievements" className="flex justify-center gap-20 flex-wrap">
-        {achievements.map((ach) => {
-          const isUnlocked = userData.achievements.includes(ach.id);
-          if (!isUnlocked) return null;
-          return (
-            <div key={ach.id} className="achievement unlocked" data-id={ach.id}>
-              <i className={ach.icon} style={{ fontSize: '32px', color: '#FFFFFF' }}></i>
-              <div className="achievement-header">
-                <p>{ach.name}</p>
+
+      {isPhotoModalOpen && (
+        <div className="photo-modal">
+          <div className="photo-modal-content">
+            <h3>Cambiar Foto de Perfil</h3>
+            <button className="modal-btn" onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = 'image/*';
+              input.onchange = handlePhotoChange;
+              input.click();
+            }}>
+              <i className="fas fa-upload"></i> Cargar desde el sistema
+            </button>
+            <button className="modal-btn" onClick={handleCameraCapture}>
+              <i className="fas fa-camera"></i> Tomar foto
+            </button>
+            <button className="modal-btn cancel-btn" onClick={() => setIsPhotoModalOpen(false)}>
+              <i className="fas fa-times"></i> Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isEditModalOpen && (
+        <div className="edit-modal">
+          <div className="edit-modal-content animate-slide-in">
+            <h3><i className="fas fa-user-edit"></i> Editar Perfil</h3>
+            <div className="edit-field">
+              <label>
+                <i className="fas fa-comment"></i> Bio
+                <textarea
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value.slice(0, 100))}
+                  maxLength={100}
+                  placeholder="Describe algo sobre ti..."
+                  className="bio-input"
+                />
+              </label>
+            </div>
+            <div className="edit-field">
+              <label>
+                <i className="fas fa-paint-brush"></i> Tema
+                <select value={theme} onChange={(e) => setTheme(e.target.value)} className="theme-select">
+                  <option value="default">Por defecto</option>
+                  <option value="forest">Bosque</option>
+                  <option value="sunset">Atardecer</option>
+                </select>
+              </label>
+            </div>
+            <div className="edit-field toggle-field">
+              <label>
+                <i className="fas fa-signal"></i> Estado
+              </label>
+              <div className="toggle-wrapper">
+                <input
+                  type="checkbox"
+                  id="isOnline"
+                  checked={isOnline}
+                  onChange={(e) => setIsOnline(e.target.checked)}
+                />
+                <label htmlFor="isOnline" className="toggle-switch"></label>
+                <span>{isOnline ? 'Online' : 'Offline'}</span>
               </div>
             </div>
-          );
-        })}
+            <div className="edit-field toggle-field">
+              <label>
+                <i className="fas fa-envelope"></i> Permitir mensajes
+              </label>
+              <div className="toggle-wrapper">
+                <input
+                  type="checkbox"
+                  id="allowMessages"
+                  checked={allowMessages}
+                  onChange={(e) => setAllowMessages(e.target.checked)}
+                />
+                <label htmlFor="allowMessages" className="toggle-switch"></label>
+                <span>{allowMessages ? 'Sí' : 'No'}</span>
+              </div>
+            </div>
+            <div className="edit-actions">
+              <button className="modal-btn save-btn" onClick={handleEditSave}>
+                <i className="fas fa-save"></i> Guardar
+              </button>
+              <button className="modal-btn cancel-btn" onClick={() => setIsEditModalOpen(false)}>
+                <i className="fas fa-times"></i> Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="profile-content">
+        {/* Sección de Logros */}
+        <div id="profileAchievements" className="achievements-list">
+          {achievements.map((ach) => {
+            const isUnlocked = userData.achievements.includes(ach.id);
+            return (
+              <div
+                key={ach.id}
+                className={`achievement ${isUnlocked ? 'unlocked' : 'locked'}`}
+                data-tooltip={isUnlocked ? ach.name : ach.description}
+              >
+                <i className={ach.icon} style={{ fontSize: '32px' }}></i>
+                <div className="achievement-header">
+                  <p>{ach.name}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Sección de Plantas Públicas (Carrusel) */}
+        <h3 className="section-title">
+          <i className="fas fa-leaf"></i> Mis Plantas Públicas
+        </h3>
+        <div className="plants-gallery">
+          {plants
+            .filter((plant) => plant.isPublic)
+            .map((plant) => (
+              <div 
+                key={plant.id} 
+                className="plant-card"
+                onClick={() => handlePlantClick(plant.id)}
+              >
+                <div
+                  className="plant-background"
+                  style={{ backgroundImage: `url(${plant.photo || '/default-plant.jpg'})` }}
+                >
+                  <div className="plant-info">
+                    <h4>{plant.name}</h4>
+                    <p>Fase: {plant.phase || 'Desconocida'}</p>
+                    <i className="fas fa-lock-open"></i>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+
+        <button
+          className="guides-btn"
+          onClick={() => setActiveSection('guides')}
+        >
+          <i className="fas fa-book"></i> Ver Guías
+        </button>
       </div>
-      <button
-        className="mt-20 bg-green-500 text-white p-10 rounded-md hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
-        onClick={() => setActiveSection('guides')}
-      >
-        <i className="fas fa-book"></i> Ver Guías
-      </button>
     </section>
   );
 }

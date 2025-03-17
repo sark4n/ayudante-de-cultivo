@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import '../styles/achievements.css';
 
 export default function Missions({ userData, setUserData, plants, queueNotification }) {
   const [achievements, setAchievements] = useState([]);
@@ -103,7 +102,12 @@ export default function Missions({ userData, setUserData, plants, queueNotificat
         queueNotification('mission', mission.name, mission.icon);
         setUserData(prev => ({
           ...prev,
-          missionProgress: { ...prev.missionProgress, [`${mission.id}_notified`]: true },
+          missionProgress: { 
+            ...prev.missionProgress, 
+            [`${mission.id}_notified`]: true,
+            [mission.id]: progress
+          },
+          // Ya no incrementamos pendingMissionCompletions aquí, confiamos en pendingMissionsCount
         }));
       }
     });

@@ -1,18 +1,20 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import PlantForm from '../components/plants/PlantForm';
 import UpdateForm from '../components/plants/UpdateForm';
 import PlantList from '../components/plants/PlantList';
 import PlantDetail from '../components/plants/PlantDetail';
 
-export default function Plants({ plants, setPlants, userData, setUserData, setActiveSection, queueNotification, selectedPlant, setSelectedPlant }) {
+export default function Plants({ plants = [], setPlants, userData, setUserData, setActiveSection, queueNotification, selectedPlant, setSelectedPlant }) {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [isUpdateFormVisible, setIsUpdateFormVisible] = useState(false);
   const [editPlantIndex, setEditPlantIndex] = useState(null);
   const [updatePlantIndex, setUpdatePlantIndex] = useState(null);
   const [editUpdateIndex, setEditUpdateIndex] = useState(null);
+  const searchParams = useSearchParams();
 
   const initialPlantData = {
     name: '',
@@ -22,6 +24,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     notes: '',
     photo: null,
     updates: [],
+    isPublic: true,
   };
 
   const initialUpdateData = {
@@ -33,6 +36,20 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     photo: null,
   };
 
+  useEffect(() => {
+    const selectedId = searchParams.get('selectedId');
+    console.log('searchParams:', selectedId, 'plants:', plants);
+    if (selectedId && plants.length > 0) {
+      const index = plants.findIndex(plant => plant.id === selectedId);
+      console.log('selectedId:', selectedId, 'found index:', index);
+      if (index !== -1) {
+        setSelectedPlant(index);
+      } else {
+        setSelectedPlant(null);
+      }
+    }
+  }, [searchParams, plants, setSelectedPlant]);
+
   const savePlant = (e, newPlant) => {
     e.preventDefault();
     const userPlants = plants.filter(p => !p.notes.includes("Ejemplo inicial"));
@@ -40,7 +57,12 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
       alert('Límite temporal de 5 plantas alcanzado.');
       return;
     }
-    const plantWithUpdates = { ...newPlant, updates: [] }; // Aseguramos que updates sea un array vacío
+    const plantWithUpdates = { 
+      ...newPlant, 
+      id: crypto.randomUUID(), 
+      updates: [], 
+      isPublic: true,
+    };
     setPlants(prev => [...prev, plantWithUpdates]);
     updateUserData('addPlant');
     setIsFormVisible(false);
@@ -50,7 +72,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     e.preventDefault();
     const updatedPlants = [...plants];
     const oldPhase = updatedPlants[editPlantIndex].phase;
-    updatedPlants[editPlantIndex] = { ...editedPlant, updates: updatedPlants[editPlantIndex].updates || [] }; // Preservamos updates
+    updatedPlants[editPlantIndex] = { ...editedPlant, updates: updatedPlants[editPlantIndex].updates || [] };
     setPlants(updatedPlants);
     if (oldPhase !== editedPlant.phase) updateUserData('editPlant');
     setIsEditFormVisible(false);
@@ -60,7 +82,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
   const deletePlant = (index) => {
     setPlants(prev => prev.filter((_, i) => i !== index));
     updateUserData('deletePlant');
-    setSelectedPlant(null); // Regresar a vista general si se borra la planta seleccionada
+    setSelectedPlant(null);
   };
 
   const addUpdate = (index) => {
@@ -77,7 +99,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     e.preventDefault();
     const updatedPlants = [...plants];
     const plant = updatedPlants[updatePlantIndex];
-    if (!plant.updates) plant.updates = []; // Aseguramos que updates sea un array
+    if (!plant.updates) plant.updates = [];
     if (editUpdateIndex !== null) {
       plant.updates[editUpdateIndex] = update;
     } else {
@@ -92,7 +114,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
 
   const deleteUpdate = (plantIndex, updateIndex) => {
     const updatedPlants = [...plants];
-    if (!updatedPlants[plantIndex].updates) updatedPlants[plantIndex].updates = []; // Aseguramos que updates exista
+    if (!updatedPlants[plantIndex].updates) updatedPlants[plantIndex].updates = [];
     updatedPlants[plantIndex].updates.splice(updateIndex, 1);
     setPlants(updatedPlants);
     updateUserData('deleteUpdate');
@@ -147,7 +169,6 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     });
   };
 
-  // Función para determinar la fase actual
   const getCurrentPhase = (plant) => {
     if (plant.updates && plant.updates.length > 0) {
       const latestPhase = plant.updates.reduce((prev, curr) => {
@@ -160,8 +181,33 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
     return plant.phase || 'semilla';
   };
 
-  // Vista detallada de la planta
-  if (selectedPlant !== null) {
+  console.log('Rendering Plants - selectedPlant:', selectedPlant, 'plants:', plants);
+
+  if (!plants || plants.length === 0) {
+    return (
+      <>
+        <button
+          onClick={() => setIsFormVisible(true)}
+          id="addPlantBtn"
+          className={isFormVisible ? 'hidden' : 'plant-btn'}
+        >
+          <i className="fas fa-leaf" style={{ fontSize: '24px' }}></i>
+        </button>
+        {isFormVisible && (
+          <PlantForm
+            onSubmit={savePlant}
+            onCancel={() => setIsFormVisible(false)}
+            initialData={initialPlantData}
+            title="Agregar Nueva Planta"
+            icon="fas fa-leaf"
+          />
+        )}
+        <div>No hay plantas cargadas aún.</div>
+      </>
+    );
+  }
+
+  if (selectedPlant !== null && plants[selectedPlant]) {
     return (
       <PlantDetail 
         plant={plants[selectedPlant]}
@@ -223,7 +269,7 @@ export default function Plants({ plants, setPlants, userData, setUserData, setAc
         setEditPlantIndex={setEditPlantIndex}
         setIsEditFormVisible={setIsEditFormVisible}
         deletePlant={deletePlant}
-        getCurrentPhase={getCurrentPhase}
+        getCurrentPhase={getCurrentPhase} // ¡Corregido aquí!
         userData={userData}
         setUserData={setUserData}
         queueNotification={queueNotification}
