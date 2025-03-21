@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === 'development') {
 
 export async function getUsers() {
   const client = await clientPromise;
-  const db = client.db('Cluster0'); // ¡Cambia 'yourDatabaseName' por el nombre real de tu DB!
+  const db = client.db('miCultivo'); // ¡Cambia 'yourDatabaseName' por el nombre real de tu DB!
   const users = await db.collection('users').find({}).toArray();
   return users.map(user => ({
     id: user._id.toString(), // Convertimos ObjectId a string
@@ -35,7 +35,7 @@ export async function getUsers() {
 
 export async function getUserById(userId) {
   const client = await clientPromise;
-  const db = client.db('Cluster0'); // ¡Cambia 'yourDatabaseName' por el nombre real de tu DB!
+  const db = client.db('miCultivo'); // ¡Cambia 'yourDatabaseName' por el nombre real de tu DB!
   const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
   if (!user) return null;
   return {
@@ -54,7 +54,7 @@ export async function getUserById(userId) {
 
 export async function saveMessage({ recipientId, message, senderId, date }) {
   const client = await clientPromise;
-  const db = client.db('Cluster0'); // ¡Cambia 'yourDatabaseName' por el nombre real de tu DB!
+  const db = client.db('miCultivo'); // ¡Cambia 'yourDatabaseName' por el nombre real de tu DB!
   const result = await db.collection('messages').insertOne({
     recipientId: new ObjectId(recipientId),
     message,

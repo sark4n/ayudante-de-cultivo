@@ -2,22 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
-export default function Missions({ userData, setUserData, plants, queueNotification }) {
-  const [achievements, setAchievements] = useState([]);
+export default function Missions({ userData, setUserData, plants, queueNotification, achievementsData }) {
   const [activeTab, setActiveTab] = useState('daily');
-
-  useEffect(() => {
-    const fetchAchievements = async () => {
-      try {
-        const response = await fetch('/api/achievements');
-        const data = await response.json();
-        setAchievements(data);
-      } catch (error) {
-        console.error("Error al cargar logros:", error);
-      }
-    };
-    fetchAchievements();
-  }, []);
 
   const dailyMissions = [
     { id: "checkPlant", name: "Chequear Planta", xp: 10, target: 1, icon: "fas fa-eye" },
@@ -25,7 +11,7 @@ export default function Missions({ userData, setUserData, plants, queueNotificat
     { id: "updatePlant", name: "Actualizar Planta", xp: 20, target: 1, icon: "fas fa-sync-alt" },
   ];
 
-  const generalMissions = achievements.flatMap(ach => ach.missions);
+  const generalMissions = achievementsData.flatMap(ach => ach.missions);
 
   const completeMission = (missionId, xp, missionName) => {
     if (!userData.missionProgress[`${missionId}_completed`]) {
@@ -107,11 +93,10 @@ export default function Missions({ userData, setUserData, plants, queueNotificat
             [`${mission.id}_notified`]: true,
             [mission.id]: progress
           },
-          // Ya no incrementamos pendingMissionCompletions aquí, confiamos en pendingMissionsCount
         }));
       }
     });
-  }, [userData.missionProgress, queueNotification, setUserData, dailyMissions, generalMissions]);
+  }, [userData.missionProgress, queueNotification, setUserData]);
 
   const renderMissions = (missions) => (
     <ul>
@@ -119,6 +104,7 @@ export default function Missions({ userData, setUserData, plants, queueNotificat
         const progress = userData.missionProgress[mission.id] || 0;
         const completed = userData.missionProgress[`${mission.id}_completed`] || false;
         const showCompleteButton = progress >= mission.target && !completed;
+        console.log(`Misión ${mission.id}: progress=${progress}, target=${mission.target}, completed=${completed}, showCompleteButton=${showCompleteButton}`);
         return (
           <li key={mission.id} className={completed ? 'completed' : ''}>
             <i className={mission.icon}></i>

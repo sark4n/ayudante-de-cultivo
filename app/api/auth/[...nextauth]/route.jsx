@@ -1,5 +1,3 @@
-// este route.js esta ubicando en api/auth/[...nextauth]/route.jsx
-
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -55,14 +53,17 @@ export const authOptions = {
           achievements: [],
           missionProgress: {},
           createdAt: new Date(),
+          isOnline: true,
+          allowMessages: true,
         });
-      } else if (existingUser && account.provider === "google" && !existingUser.profilePhoto) {
+      } else {
+        console.log(`Estableciendo isOnline: true para ${user.email}`);
         await db.collection("users").updateOne(
           { email: user.email },
-          { $set: { profilePhoto: user.image } }
+          { $set: { isOnline: true } }
         );
       }
-      await initializeAchievements(); // Aseguramos que los logros estén inicializados
+      await initializeAchievements();
       return true;
     },
     async session({ session, token }) {
@@ -77,6 +78,8 @@ export const authOptions = {
         session.user.achievements = user.achievements || [];
         session.user.missionProgress = user.missionProgress || {};
         session.user.name = user.name || session.user.name;
+        session.user.isOnline = user.isOnline ?? true;
+        session.user.allowMessages = user.allowMessages ?? true;
       }
       return session;
     },

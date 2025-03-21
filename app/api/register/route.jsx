@@ -1,5 +1,3 @@
-// este route.js esta ubicando en api/register/route.jsx
-
 import clientPromise from '../../lib/mongodb';
 import bcrypt from "bcryptjs";
 
@@ -23,6 +21,8 @@ export async function POST(req) {
     password: hashedPassword,
     name: email.split('@')[0],
     createdAt: new Date(),
+    isOnline: true, // Por defecto conectado
+    allowMessages: true, // Por defecto permite mensajes
   };
   await db.collection("users").insertOne(newUser);
 

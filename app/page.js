@@ -4,7 +4,6 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
-import { showTipOfTheDay } from './lib/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
@@ -28,11 +27,57 @@ export default function Home() {
     level: 0,
     xp: 0,
     newAchievements: 0,
-    pendingMissionCompletions: 0, // Lo mantenemos por compatibilidad, pero no lo usaremos en el conteo
+    pendingMissionCompletions: 0,
   });
   const [achievementsData, setAchievementsData] = useState([]);
   const [pendingNotifications, setPendingNotifications] = useState([]);
   const [selectedAchievement, setSelectedAchievement] = useState(null);
+  const [forceOwnProfile, setForceOwnProfile] = useState(false);
+
+  const queueNotification = (type, name, icon = null, id = null, color = null) => {
+    setPendingNotifications(prev => {
+      if (prev.some(notif => notif.type === type && notif.name === name)) return prev;
+      return [...prev, { type, name, icon, id, color }];
+    });
+  };
+
+  const fetchFreshData = async () => {
+    if (status === 'authenticated' && session?.user) {
+      try {
+        const response = await fetch(`/api/user/get?userId=${session.user.id}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const freshData = await response.json();
+        console.log('Datos frescos cargados desde DB:', freshData);
+        setPlants(freshData.plants || []);
+        setUserData(prev => {
+          const mergedMissionProgress = { ...freshData.missionProgress, ...prev.missionProgress };
+          console.log('Fusionando missionProgress - DB:', freshData.missionProgress, 'Local:', prev.missionProgress, 'Resultado:', mergedMissionProgress);
+          return {
+            ...prev,
+            achievements: freshData.achievements || [],
+            missionProgress: mergedMissionProgress,
+            profilePhoto: freshData.profilePhoto || session.user.image || null,
+            name: freshData.name || session.user.name || 'Usuario autenticado',
+            email: freshData.email || session.user.email,
+            level: freshData.level || 0,
+            xp: freshData.xp || 0,
+            newAchievements: freshData.newAchievements || 0,
+            pendingMissionCompletions: freshData.pendingMissionCompletions || 0,
+          };
+        });
+      } catch (error) {
+        console.error('Error al cargar datos frescos:', error);
+        queueNotification('warning', 'No se pudieron cargar los datos actualizados', 'fas fa-exclamation-triangle');
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      console.log("Cargando datos iniciales de sesión:", session.user);
+      fetchFreshData();
+    }
+  }, [session, status]);
 
   useEffect(() => {
     const fetchAchievements = async () => {
@@ -48,65 +93,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
-      console.log("Cargando datos de sesión:", session.user);
-      setUserData(prev => ({
-        ...prev,
-        achievements: session.user.achievements || [],
-        missionProgress: session.user.missionProgress || {},
-        profilePhoto: session.user.profilePhoto || session.user.image || null,
-        name: session.user.name || 'Usuario autenticado',
-        email: session.user.email,
-        level: session.user.level || 0,
-        xp: session.user.xp || 0,
-        newAchievements: session.user.newAchievements || 0,
-        pendingMissionCompletions: session.user.pendingMissionCompletions || 0,
-      }));
-      setPlants(session.user.plants || []);
-    }
-  }, [session, status]);
-
-  useEffect(() => {
     const selectedId = searchParams.get('selectedId');
-    if (selectedId && plants.length > 0) {
+    if (selectedId && plants.length > 0 && activeSection === 'plants') {
       const index = plants.findIndex(plant => plant.id === selectedId);
       if (index !== -1) {
         setSelectedPlant(index);
-        setActiveSection('plants');
       }
     }
-  }, [searchParams, plants]);
-
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
-      const updateData = async () => {
-        console.log("Guardando datos en MongoDB:", { userData, plants });
-        try {
-          const response = await fetch('/api/user/update', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userData, plants }),
-          });
-          const result = await response.json();
-          if (!response.ok) {
-            console.error('Error al actualizar datos:', result);
-          } else {
-            console.log('Datos actualizados con éxito:', result);
-          }
-        } catch (error) {
-          console.error('Error en useEffect de actualización:', error);
-        }
-      };
-      updateData();
-    }
-  }, [userData, plants, status, session]);
-
-  const queueNotification = (type, name, icon = null, id = null, color = null) => {
-    setPendingNotifications(prev => {
-      if (prev.some(notif => notif.type === type && notif.name === name)) return prev;
-      return [...prev, { type, name, icon, id, color }];
-    });
-  };
+  }, [searchParams, plants, activeSection]);
 
   useEffect(() => {
     if (pendingNotifications.length > 0) {
@@ -159,17 +153,26 @@ export default function Home() {
         count++;
       }
     });
-    return count; // Eliminamos la suma de pendingMissionCompletions
+    return count;
   })() : 0;
 
   const handleSectionChange = (sectionId) => {
     setActiveSection(sectionId);
+    const userIdFromUrl = searchParams.get('userId');
+    setForceOwnProfile(sectionId === 'profile' && !userIdFromUrl);
+    fetchFreshData();
     if (sectionId === 'plants') {
       setSelectedPlant(null);
+      window.history.pushState({}, '', '/');
+    } else if (sectionId === 'profile' && !userIdFromUrl) {
+      setUserData(prev => ({
+        ...prev,
+        newAchievements: 0,
+      }));
+      window.history.pushState({}, '', '/');
+    } else {
+      window.history.pushState({}, '', '/');
     }
-    if (sectionId === 'profile') {
-      setUserData(prev => ({ ...prev, newAchievements: 0 }));
-    } 
   };
 
   if (status === 'loading') {
@@ -199,6 +202,8 @@ export default function Home() {
           selectedAchievement={selectedAchievement}
           selectedPlant={selectedPlant}
           setSelectedPlant={setSelectedPlant}
+          forceOwnProfile={forceOwnProfile}
+          achievementsData={achievementsData}
         />
         <Footer 
           activeSection={activeSection} 

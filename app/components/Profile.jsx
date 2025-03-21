@@ -2,23 +2,67 @@
 
 import { useEffect, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 
-export default function Profile({ userData, setUserData, plants, setPlants, setActiveSection }) {
+export default function Profile({ userData = {}, setUserData, plants = [], setPlants, setActiveSection, forceOwnProfile = false }) {
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
   const [achievements, setAchievements] = useState([]);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [bio, setBio] = useState(userData.bio || '');
   const [theme, setTheme] = useState(userData.theme || 'default');
-  const [isOnline, setIsOnline] = useState(userData.isOnline || false);
-  const [allowMessages, setAllowMessages] = useState(userData.allowMessages !== false);
+  const [isOnline, setIsOnline] = useState(userData.isOnline ?? true);
+  const [allowMessages, setAllowMessages] = useState(userData.allowMessages ?? true);
+  const [viewedUser, setViewedUser] = useState(null);
+  const [viewedUserPlants, setViewedUserPlants] = useState([]);
+  const [isOwnProfile, setIsOwnProfile] = useState(true);
+  const [isLoadingViewedUser, setIsLoadingViewedUser] = useState(false);
+
+  useEffect(() => {
+    const userId = searchParams.get('userId');
+    console.log('Profile useEffect:', { userId, forceOwnProfile, sessionUserId: session?.user?.id }); // Eliminado activeSection
+    if (forceOwnProfile || !userId || (status === 'authenticated' && session?.user?.id === userId)) {
+      setViewedUser(null);
+      setViewedUserPlants([]);
+      setIsOwnProfile(true);
+      setIsLoadingViewedUser(false);
+      setBio(userData.bio || '');
+      setTheme(userData.theme || 'default');
+      setIsOnline(userData.isOnline ?? true);
+      setAllowMessages(userData.allowMessages ?? true);
+    } else if (userId && status === 'authenticated' && session?.user?.id !== userId) {
+      setIsLoadingViewedUser(true);
+      const fetchViewedUser = async () => {
+        try {
+          const response = await fetch(`/api/user/get?userId=${userId}`, { cache: 'no-store' });
+          if (!response.ok) throw new Error('Error al cargar el usuario');
+          const user = await response.json();
+          console.log('Usuario visitante cargado:', user);
+          setViewedUser(user);
+          setViewedUserPlants(user.plants || []);
+          setIsOwnProfile(false);
+          setBio(user.bio || '');
+          setTheme(user.theme || 'default');
+          setIsOnline(user.isOnline ?? true);
+          setAllowMessages(user.allowMessages ?? true);
+        } catch (error) {
+          console.error('Error fetching viewed user:', error);
+        } finally {
+          setIsLoadingViewedUser(false);
+        }
+      };
+      fetchViewedUser();
+    }
+  }, [searchParams, session, status, userData, forceOwnProfile]);
 
   useEffect(() => {
     const fetchAchievements = async () => {
       try {
         const response = await fetch('/api/achievements');
         const data = await response.json();
+        console.log('Logros cargados:', data);
         setAchievements(data);
       } catch (error) {
         console.error("Error al cargar logros:", error);
@@ -28,24 +72,30 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
   }, []);
 
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && isOwnProfile && session?.user) {
       setUserData(prev => ({
         ...prev,
-        name: session?.user?.name || 'Usuario autenticado',
-        email: session?.user?.email,
-        level: session?.user?.level || 0,
-        xp: session?.user?.xp || 0,
-        profilePhoto: session?.user?.profilePhoto || prev.profilePhoto,
-        bio: session?.user?.bio || prev.bio || '',
-        theme: session?.user?.theme || prev.theme || 'default',
-        isOnline: session?.user?.isOnline ?? prev.isOnline ?? false,
-        allowMessages: session?.user?.allowMessages ?? prev.allowMessages ?? true,
+        name: session.user.name || 'Usuario autenticado',
+        email: session.user.email || '',
+        level: session.user.level || 0,
+        xp: session.user.xp || 0,
+        profilePhoto: session.user.profilePhoto || prev.profilePhoto,
+        bio: session.user.bio || prev.bio || '',
+        theme: session.user.theme || prev.theme || 'default',
+        isOnline: session.user.isOnline ?? true,
+        allowMessages: session.user.allowMessages ?? true,
+        achievements: session.user.achievements || prev.achievements || [],
       }));
+      setBio(session.user.bio || '');
+      setTheme(session.user.theme || 'default');
+      setIsOnline(session.user.isOnline ?? true);
+      setAllowMessages(session.user.allowMessages ?? true);
+      setPlants(session.user.plants || []);
     }
-  }, [session, status, setUserData]);
+  }, [session, status, setUserData, setPlants, isOwnProfile]);
 
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && isOwnProfile) {
       const updateUserData = async () => {
         try {
           const response = await fetch('/api/user/update', {
@@ -60,7 +110,7 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
       };
       updateUserData();
     }
-  }, [bio, theme, isOnline, allowMessages, status, userData, plants]);
+  }, [bio, theme, isOnline, allowMessages, status, userData, plants, isOwnProfile]);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -123,14 +173,30 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
   };
 
   const logout = () => {
-    signOut({ redirect: true, callbackUrl: '/' }).then(() => {
-      setUserData({ achievements: [], missionProgress: {}, profilePhoto: null, name: '', email: '', level: 0, xp: 0, newAchievements: 0, bio: '', theme: 'default', isOnline: false, allowMessages: true });
-      setPlants([]);
+    const updateOnlineStatus = async () => {
+      try {
+        const response = await fetch('/api/user/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userData: { ...userData, isOnline: false }, plants }),
+        });
+        if (!response.ok) throw new Error('Error al actualizar estado');
+      } catch (error) {
+        console.error('Error al actualizar estado online:', error);
+      }
+    };
+  
+    updateOnlineStatus().then(() => {
+      signOut({ redirect: true, callbackUrl: '/' }).then(() => {
+        setUserData({ achievements: [], missionProgress: {}, profilePhoto: null, name: '', email: '', level: 0, xp: 0, newAchievements: 0, bio: '', theme: 'default', isOnline: false, allowMessages: true });
+        setPlants([]);
+      });
     });
   };
 
   const handlePlantClick = (plantId) => {
-    const index = plants.findIndex(plant => plant.id === plantId);
+    const plantList = isOwnProfile ? plants : viewedUserPlants;
+    const index = plantList.findIndex(plant => plant.id === plantId);
     if (index !== -1) {
       setActiveSection('plants');
       setPlants(prevPlants => {
@@ -157,6 +223,13 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
     return <div className="text-center p-20 text-green-700 dark:text-green-300">Cargando...</div>;
   }
 
+  if (isLoadingViewedUser) {
+    return <div className="text-center p-20 text-green-700 dark:text-green-300">Cargando perfil...</div>;
+  }
+
+  const displayUser = isOwnProfile ? userData : viewedUser;
+  const displayPlants = isOwnProfile ? plants : viewedUserPlants;
+
   return (
     <section id="profile" className={status === 'authenticated' ? '' : 'hidden'}>
       <div className="profile-header">
@@ -165,20 +238,22 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
             <div className="profile-photo-wrapper">
               <div
                 className="profile-photo"
-                onClick={() => status === 'authenticated' ? setIsPhotoModalOpen(true) : alert("No puedes cambiar la foto sin estar autenticado.")}
-                style={{ backgroundImage: userData.profilePhoto ? `url(${userData.profilePhoto})` : 'none' }}
+                onClick={() => isOwnProfile && status === 'authenticated' ? setIsPhotoModalOpen(true) : null}
+                style={{ backgroundImage: displayUser?.profilePhoto ? `url(${displayUser.profilePhoto})` : 'none', cursor: isOwnProfile ? 'pointer' : 'default' }}
               >
-                {!userData.profilePhoto && (
+                {!displayUser?.profilePhoto && (
                   <i className="fas fa-user" style={{ fontSize: '60px', color: '#4caf50' }}></i>
                 )}
-                <div className="photo-overlay">
-                  <i className="fas fa-camera"></i>
-                </div>
+                {isOwnProfile && (
+                  <div className="photo-overlay">
+                    <i className="fas fa-camera"></i>
+                  </div>
+                )}
               </div>
-              <span className="level-badge">{userData.level}</span>
+              <span className="level-badge">{displayUser?.level || 0}</span>
             </div>
             <div className="profile-info">
-              <h1 className="profile-name">{userData.name || 'Usuario no autenticado'}</h1>
+              <h1 className="profile-name">{displayUser?.name || 'Usuario no autenticado'}</h1>
               <p className="profile-bio">{bio || 'Añade una bio en Editar Perfil'}</p>
             </div>
             <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
@@ -186,14 +261,16 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
           <div className="xp-bar">
             <div
               className="xp-progress"
-              style={{ width: `${(userData.xp / xpToNextLevel()) * 100}%` }}
+              style={{ width: `${((displayUser?.xp || 0) / xpToNextLevel()) * 100}%` }}
             ></div>
-            <span className="xp-text">{userData.xp} / {xpToNextLevel()} XP</span>
+            <span className="xp-text">{displayUser?.xp || 0} / {xpToNextLevel()} XP</span>
           </div>
-          <button className="settings-btn" onClick={() => setIsSettingsOpen(!isSettingsOpen)}>
-            <i className="fas fa-cog"></i>
-          </button>
-          {isSettingsOpen && (
+          {isOwnProfile && (
+            <button className="settings-btn" onClick={() => setIsSettingsOpen(!isSettingsOpen)}>
+              <i className="fas fa-cog"></i>
+            </button>
+          )}
+          {isOwnProfile && isSettingsOpen && (
             <div className="settings-menu">
               <button className="menu-item" onClick={() => { setIsEditModalOpen(true); setIsSettingsOpen(false); }}>
                 <i className="fas fa-edit"></i> Editar Perfil
@@ -206,7 +283,7 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
         </div>
       </div>
 
-      {isPhotoModalOpen && (
+      {isOwnProfile && isPhotoModalOpen && (
         <div className="photo-modal">
           <div className="photo-modal-content">
             <h3>Cambiar Foto de Perfil</h3>
@@ -229,7 +306,7 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
         </div>
       )}
 
-      {isEditModalOpen && (
+      {isOwnProfile && isEditModalOpen && (
         <div className="edit-modal">
           <div className="edit-modal-content animate-slide-in">
             <h3><i className="fas fa-user-edit"></i> Editar Perfil</h3>
@@ -298,10 +375,9 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
       )}
 
       <div className="profile-content">
-        {/* Sección de Logros */}
         <div id="profileAchievements" className="achievements-list">
           {achievements.map((ach) => {
-            const isUnlocked = userData.achievements.includes(ach.id);
+            const isUnlocked = (isOwnProfile ? (userData.achievements || []) : (viewedUser?.achievements || [])).includes(ach.id);
             return (
               <div
                 key={ach.id}
@@ -317,39 +393,39 @@ export default function Profile({ userData, setUserData, plants, setPlants, setA
           })}
         </div>
 
-        {/* Sección de Plantas Públicas (Carrusel) */}
         <h3 className="section-title">
-          <i className="fas fa-leaf"></i> Mis Plantas Públicas
+          <i className="fas fa-leaf"></i> Plantas Públicas
         </h3>
         <div className="plants-gallery">
-          {plants
-            .filter((plant) => plant.isPublic)
-            .map((plant) => (
-              <div 
-                key={plant.id} 
-                className="plant-card"
-                onClick={() => handlePlantClick(plant.id)}
+          {(displayPlants || []).filter((plant) => plant.isPublic).map((plant) => (
+            <div 
+              key={plant.id} 
+              className="plant-card"
+              onClick={() => isOwnProfile && handlePlantClick(plant.id)}
+              style={{ cursor: isOwnProfile ? 'pointer' : 'default' }}
+            >
+              <div
+                className="plant-background"
+                style={{ backgroundImage: `url(${plant.photo || '/default-plant.jpg'})` }}
               >
-                <div
-                  className="plant-background"
-                  style={{ backgroundImage: `url(${plant.photo || '/default-plant.jpg'})` }}
-                >
-                  <div className="plant-info">
-                    <h4>{plant.name}</h4>
-                    <p>Fase: {plant.phase || 'Desconocida'}</p>
-                    <i className="fas fa-lock-open"></i>
-                  </div>
+                <div className="plant-info">
+                  <h4>{plant.name}</h4>
+                  <p>Fase: {plant.phase || 'Desconocida'}</p>
+                  <i className="fas fa-lock-open"></i>
                 </div>
               </div>
-            ))}
+            </div>
+          ))}
         </div>
 
-        <button
-          className="guides-btn"
-          onClick={() => setActiveSection('guides')}
-        >
-          <i className="fas fa-book"></i> Ver Guías
-        </button>
+        {isOwnProfile && (
+          <button
+            className="guides-btn"
+            onClick={() => setActiveSection('guides')}
+          >
+            <i className="fas fa-book"></i> Ver Guías
+          </button>
+        )}
       </div>
     </section>
   );

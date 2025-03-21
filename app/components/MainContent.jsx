@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Plants from "../plants/page";
 import Missions from "../missions/page";
 import Stats from "./Stats";
-import Profile from "../profile/page";
+import Profile from "../components/Profile";
 import Community from "../community/page";
 
 export default function MainContent({
@@ -19,6 +19,8 @@ export default function MainContent({
   selectedAchievement,
   selectedPlant,
   setSelectedPlant,
+  forceOwnProfile,
+  achievementsData, // Añadir esta prop
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -306,6 +308,7 @@ export default function MainContent({
           setUserData={setUserData}
           plants={plants}
           queueNotification={queueNotification}
+          achievementsData={achievementsData} // Pasar achievementsData
         />
       </section>
 
@@ -329,6 +332,7 @@ export default function MainContent({
           setPlants={setPlants}
           setActiveSection={setActiveSection}
           queueNotification={queueNotification}
+          forceOwnProfile={forceOwnProfile}
         />
       </section>
     </main>

@@ -1,0 +1,41 @@
+/* Estilos para la sección de comunidad */
+
+/* Cuadrícula de usuarios en línea */
+.online-users-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  /* Foto de perfil de usuario en línea */
+  .online-user-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #4caf50;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .online-user-photo:hover {
+    transform: scale(1.1);
+    border-color: #388e3c;
+  }
+  
+  body.dark .online-user-photo {
+    border-color: #81c784;
+  }
+  
+  body.dark .online-user-photo:hover {
+    border-color: #66bb6a;
+  }
+  
+  /* Ajustes para móviles */
+  @media (max-width: 600px) {
+    .online-user-photo {
+      width: 40px;
+      height: 40px;
+    }
+  }
